@@ -111,5 +111,30 @@ CREATE TABLE Planeta(
 );
 
 CREATE TABLE Comunidade(
-    
-)
+    Especie VARCHAR2(256),
+        CONSTRAINT FK_ESPECIE FOREIGN KEY (Especie) REFERENCES Especie(Nome_Cientifico),
+    Nome VARCHAR2(256),
+        CONSTRAINT PK_COMUNIDADE PRIMARY KEY (Especie, Nome),
+    Qtd_habitantes NUMBER(10),
+);
+
+CREATE TABLE Habitacao(
+    Planeta VARCHAR2(256),
+        CONSTRAINT FK_PLANETA FOREIGN KEY (Planeta) REFERENCES Planeta(Designacao_Astronomica),
+    Especie VARCHAR2(256),
+    NomeEspecie VARCHAR2(256),
+        CONSTRAINT FK_ESPECIE FOREIGN KEY (Especie, NomeEspecie) REFERENCES Comunidade(Especie, Nome),
+    Data_Ini DATE,
+        CONSTRAINT PK_HABITACAO PRIMARY KEY (Planeta, Especie, NomeEspecie, Data_Ini),
+    Data_Fim DATE
+);
+
+CREATE TABLE Participa(
+    Faccao VARCHAR2(256),
+        CONSTRAINT FK_FACCAO FOREIGN KEY (Faccao) REFERENCES Faccao(Nome),
+    Especie VARCHAR2(256),
+    NomeEspecie VARCHAR2(256),
+        CONSTRAINT FK_ESPECIE FOREIGN KEY (Especie, NomeEspecie) REFERENCES Comunidade(Especie, Nome),
+        CONSTRAINT PK_PARTICIPA PRIMARY KEY (Faccao, Especie, NomeEspecie)
+);
+-- Checks de negatividade, valores Deafault

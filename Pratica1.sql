@@ -9,6 +9,7 @@ CREATE TABLE Nacao(--Nacao
     Nome VARCHAR2(256),
         CONSTRAINT PK_NOME PRIMARY KEY (Nome),
     Quantidade_Planetas NUMBER(10),
+        CONTRAINT CK_QUANTIDADE_PLANETAS CHECK (Quantidade_Planetas > 0),
     Federacao VARCHAR2(256),
         CONSTRAINT FK_FEDERACAO FOREIGN KEY (Federacao) REFERENCES Federacao(Nome)
 );
@@ -36,7 +37,7 @@ CREATE TABLE Lider(
     CPI VARCHAR2(100),
         CONSTRAINT PK_LIDER PRIMARY KEY (CPI),
     Nome VARCHAR2(256),
-    Cargo VARCHAR2(256) NOT NULL,
+    Cargo VARCHAR2(256) NOT UNLL,
     Nacao VARCHAR2(256),
         CONSTRAINT FK_NACAO FOREIGN KEY (Nacao) REFERENCES Nacao(Nome),
     Especie VARCHAR2(256) NOT NULL,
@@ -105,7 +106,9 @@ CREATE TABLE Planeta(
     Designacao_Astronomica VARCHAR2(256),
         CONSTRAINT PK_DESIGNACAO PRIMARY KEY (Designacao_Astronomica),
     Massa VARCHAR2(100), --VARCHAR porque o numero pode ser muito grande
+        CONSTRAINT CK_MASSA CHECK (Massa > 0),
     Raio VARCHAR2(100), --VARCHAR porque o numero pode ser muito grande
+        CONSTRAINT CK_RAIO CHECK (Raio > 0),
     Composicao VARCHAR2(256),
     Classicacao VARCHAR2(256)
 );
@@ -137,4 +140,4 @@ CREATE TABLE Participa(
         CONSTRAINT FK_ESPECIE FOREIGN KEY (Especie, NomeEspecie) REFERENCES Comunidade(Especie, Nome),
         CONSTRAINT PK_PARTICIPA PRIMARY KEY (Faccao, Especie, NomeEspecie)
 );
--- Checks de negatividade, valores Deafault
+-- Valores Deafault

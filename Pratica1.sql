@@ -10,7 +10,7 @@ CREATE TABLE Nacao(--Nacao
         CONSTRAINT PK_NOME PRIMARY KEY (Nome),
     Quantidade_Planetas NUMBER(10),
     Federacao VARCHAR2(256),
-        CONSTRAINT fk_federacao FOREIGN KEY (Federacao) REFERENCES Federacao(Nome)
+        CONSTRAINT FK_FEDERACAO FOREIGN KEY (Federacao) REFERENCES Federacao(Nome)
 );
 
 CREATE TABLE Dominacia(
@@ -29,7 +29,7 @@ CREATE TABLE Especie(
     Planeta_Origem VARCHAR2(256) NOT NULL,
         CONSTRAINT FK_PLANETA_ORIGEM FOREIGN KEY (Planeta_Origem) REFERENCES Planeta(Designacao_Astronomica),
     Eh_Inteligente VARCHAR2(3) NOT NULL,
-        CHECK (LOWER(Eh_Inteligente) IN ('Sim', 'Nao'))-- Testar se funciona
+        CHECK (LOWER(Eh_Inteligente) IN ('sim', 'nao'))-- Testar se funciona
 );
 
 CREATE TABLE Lider(
@@ -38,7 +38,7 @@ CREATE TABLE Lider(
     Nome VARCHAR2(256),
     Cargo VARCHAR2(256) NOT NULL,
     Nacao VARCHAR2(256),
-        CONSTRAINT fk_nacao FOREIGN KEY (Nacao) REFERENCES Nacao(Nome),
+        CONSTRAINT FK_NACAO FOREIGN KEY (Nacao) REFERENCES Nacao(Nome),
     Especie VARCHAR2(256) NOT NULL,
         CONTRAINT FK_ESPECIE FOREIGN KEY (Especie) REFERENCES Especie(Nome_Cientifico)
 );

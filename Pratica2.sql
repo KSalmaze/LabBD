@@ -30,10 +30,10 @@ INSERT INTO Estrela (Id_catalogo, Nome, Classificacao, Massa, Coordenada_X, Coor
 -- Tablela OrbitaEstrela
 
 INSERT INTO OrbitaEstrela (Orbitante, Orbitada, Distancia_Min, Distancia_Max, Periodo)
-    VALUES ('Alpha Centauri', 'G.O.M.E.S.', 100, 200, 5);
+    VALUES (318, 256, '100', '200', '5');
 
 INSERT INTO OrbitaEstrela (Orbitante, Orbitada, Distancia_Min, Distancia_Max, Periodo)
-    VALUES ('G.O.M.E.S.', 'Alpha Centauri', 220, 10, 80);
+    VALUES (256, 318, '220', '10', '80');
 
 -- Tabela Planeta
 
@@ -46,10 +46,10 @@ INSERT INTO Planeta (Designacao_Astronomica, Massa, Raio, Composicao, Classicaca
 -- Tabela Sistema
 
 INSERT INTO Sistema(Estrela, Nome)
-    VALUES ('Alpha Centauri', 'Janos');
+    VALUES (318, 'Janos');
 
 INSERT INTO Sistema(Estrela, Nome)
-    VALUES ('G.O.M.E.S.', 'Euclido');
+    VALUES (256, 'Euclido');
 
 -- Tabela Dominancia
 
@@ -58,3 +58,72 @@ INSERT INTO Dominancia(Nacao, Planeta, Data_ini)
 
 INSERT INTO Dominancia(Nacao, Planeta, Data_ini, Data_fim)
     VALUES ('Cordantes', 'Imanis 5', TO_DATE('01/01/2200', 'DD/MM/YYYY'), TO_DATE('01/01/2201', 'DD/MM/YYYY'));
+
+-- Tabela Especie
+
+INSERT INTO Especie (Nome_Cientifico, Planeta_Origem, Eh_Inteligente)
+    VALUES ('Cachimbus-Cachunbenses', 'Jemison 1', 'nao');
+
+INSERT INTO Especie (Nome_Cientifico, Planeta_Origem, Eh_Inteligente)
+    VALUES ('Semi-Humanos', 'Imanis 5', 'sim');
+
+-- Tabela Lider
+
+INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
+    VALUES ('Ajan322', 'Geraldo', 'Presidente', 'Jemison', 'Semi-Humanos');
+
+INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
+    VALUES ('Bjan322', 'Silvia', 'Presidente', 'Cordantes', 'Semi-Humanos');
+
+-- Tabela Faccao
+
+INSERT INTO Faccao (Nome, Lider, Ideologia, Qnt_Nacoes)
+    VALUES ('Culto de Vanklion', 'Ajan322', 'Anarco-Capistalismo', 3);
+
+INSERT INTO Faccao (Nome, Lider, Ideologia, Qnt_Nacoes)
+    VALUES ('Vetistas', 'Bjan322', 'Comunismo', 5);
+
+-- Tabela NacaoFaccao
+
+INSERT INTO NacaoFaccao (Nacao, Faccao)
+    VALUES ('Jemison', 'Culto de Vanklion');
+
+INSERT INTO NacaoFaccao (Nacao, Faccao)
+    VALUES ('Cordantes', 'Vetistas');
+
+-- Tabela OrbitaPlaneta
+
+INSERT INTO OrbitaPlaneta (Planeta, Estrela, Distancia_Min, Distancia_Max, Periodo)
+    VALUES ('Jemison 1', 318, '100', '200', '5');
+
+INSERT INTO OrbitaPlaneta (Planeta, Estrela, Distancia_Min, Distancia_Max, Periodo)
+    VALUES ('Imanis 5', 256, '220', '10', '80');
+
+-- Tabela Comunidade
+
+INSERT INTO Comunidade (Especie, Nome, Qtd_habitantes)
+    VALUES ('Cachimbus-Cachunbenses', 'Rio de Janeiro', 10520);
+
+INSERT INTO Comunidade (Especie, Nome, Qtd_habitantes)
+    VALUES ('Semi-Humanos', 'O Alto', 10000);
+
+-- Tabela Habitacao
+
+INSERT INTO Habitacao (Planeta, Especie, NomeEspecie, Data_Ini, Data_Fim)
+    VALUES ('Jemison 1', 'Cachimbus-Cachunbenses', 'Rio de Janeiro', TO_DATE('01/01/2200', 'DD/MM/YYYY'), TO_DATE('01/01/2201', 'DD/MM/YYYY'));
+
+INSERT INTO Habitacao (Planeta, Especie, NomeEspecie, Data_Ini)
+    VALUES ('Imanis 5', 'Semi-Humanos', 'O Alto', TO_DATE('01/01/2200', 'DD/MM/YYYY'));
+
+-- Tabela Participa
+
+INSERT INTO Participa (Faccao, Especie, NomeEspecie)
+    VALUES ('Culto de Vanklion', 'Cachimbus-Cachunbenses', 'Rio de Janeiro');
+
+INSERT INTO Participa (Faccao, Especie, NomeEspecie)
+    VALUES ('Vetistas', 'Semi-Humanos', 'O Alto');
+
+
+-- 2)
+
+UPDATE Federacao SET 

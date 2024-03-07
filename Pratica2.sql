@@ -27,6 +27,9 @@ INSERT INTO Estrela (Id_catalogo, Nome, Classificacao, Massa, Coordenada_X, Coor
 INSERT INTO Estrela (Id_catalogo, Nome, Classificacao, Massa, Coordenada_X, Coordenada_Y, Coordenada_Z)
     VALUES (256, 'G.O.M.E.S.', 'B', '10000', 681, -105, -42);
 
+INSERT INTO Estrela (Id_catalogo, Nome, Classificacao, Massa, Coordenada_X, Coordenada_Y, Coordenada_Z)
+    VALUES (64, 'Walter', 'A', '1900', 981, 105, -42);
+
 -- Tablela OrbitaEstrela
 
 INSERT INTO OrbitaEstrela (Orbitante, Orbitada, Distancia_Min, Distancia_Max, Periodo)
@@ -148,3 +151,28 @@ DELETE FROM Sistema
 
     -- b)
 
+DELETE FROM Estrela
+    WHERE Id_catalogo = 64;
+
+    -- c)
+
+DELETE FROM Federacao
+    WHERE Nome = 'Imanis';
+
+-- As nações que refereciam essa federação serão excluidas
+
+-- 4)
+    -- a)
+ALTER TABLE Sistema
+    ADD (Tamanho VARCHAR2(256));
+
+-- As tuplas já existentes ficam com o valor NULL
+
+
+    -- b)
+ALTER TABLE Sistema
+    ADD (Populacao NUMBER(10) DEFAULT 0);
+
+-- As tuplas já existentes ficam com o valor 0
+
+    -- c)

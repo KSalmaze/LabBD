@@ -125,5 +125,26 @@ INSERT INTO Participa (Faccao, Especie, NomeEspecie)
 
 
 -- 2)
+    -- a)
 
-UPDATE Federacao SET 
+UPDATE Federacao SET Data_Fundacao = TO_DATE('25/04/2190', 'DD/MM/YYYY') 
+    WHERE Nome = 'Nova Atlantis';
+
+    --b)
+
+UPDATE Planeta SET Massa = 140, Raio = 12
+    WHERE Designacao_Astronomica = 'Jemison 1';
+
+    --c)
+
+UPDATE Dominancia SET Data_fim = NULL;
+
+
+-- 3)
+    -- a)
+
+DELETE FROM Sistema
+    WHERE Estrela = 256;
+
+    -- b)
+

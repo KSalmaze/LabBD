@@ -3,7 +3,6 @@
 --1)
 
 -- Tabela Federação
--- Talvez Dropar essa pra adicional valor default
 
 INSERT INTO Federacao (Nome,Data_Fundacao)
     VALUES ('Nova Atlantis', TO_DATE('25/04/2190', 'DD/MM/YYYY'));
@@ -156,8 +155,14 @@ DELETE FROM Estrela
 
     -- c)
 
+INSERT INTO Federacao (Nome,Data_Fundacao)
+    VALUES ('Raum', TO_DATE('10/06/2114', 'DD/MM/YYYY'));
+    
+INSERT INTO Nacao (Nome, Quantidade_Planetas, Federacao)
+    VALUES ('Pompeia', 5, 'Raum');
+    
 DELETE FROM Federacao
-    WHERE Nome = 'Imanis';
+    WHERE Nome = 'Raum';
 
 -- As nações que refereciam essa federação serão excluidas
 
@@ -173,6 +178,47 @@ ALTER TABLE Sistema
 ALTER TABLE Sistema
     ADD (Populacao NUMBER(10) DEFAULT 0);
 
--- As tuplas já existentes ficam com o valor 0
+-- As tuplas já existentes ficam com o valor Default
 
     -- c)
+
+ALTER TABLE Planeta DROP CONSTRAINT CK_MASSA_PLANETA;
+
+    -- d)
+
+INSERT INTO Planeta (Designacao_Astronomica, Massa, Raio)
+    VALUES ('Jemison 2', -100, 10);
+
+/*
+ALTER TABLE Planeta ADD CONSTRAINT 
+    CK_MASSA_PLANETA CHECK (Massa > 0);
+
+  Erro ao ser inserida, pois uma das tuplas não satisfaz a condição
+*/
+
+ALTER TABLE Planeta ADD CONSTRAINT 
+    CK_MASSA_PLANETA CHECK (Massa > 0)  NOVALIDATE;
+
+-- Sucesso ao ser inserida
+
+    -- e)
+
+ALTER TABLE Federacao MODIFY Data_Fundacao NULL;
+
+ALTER TABLE Nacao MODIFY Quantidade_Planetas DEFAULT 1;
+
+    -- f)
+
+/* 
+Não foi possivel remover o atributo da tabela pois ele 
+fazia parte da chave primaria, mas caso isso fosse possivel resultaria em 
+inconsistencia nos dados da tabela que a referenciava.
+*/
+
+    -- g)
+
+/*
+    Para que a tabela seja excluida, é necessári que as chaves estrangeiras
+que a referenciam sejam removidas. O que acarretaria em perda de consistencia dos
+dados.
+*/

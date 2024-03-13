@@ -5,21 +5,21 @@
 
 -- 1)
 
-DROP TABLE Federacao;
-DROP TABLE Nacao;
-DROP TABLE Estrela;
 DROP TABLE OrbitaPlaneta;
-DROP TABLE Planeta;
 DROP TABLE Sistema;
 DROP TABLE Dominancia;
-DROP TABLE Especie;
-DROP TABLE Lider;
-DROP TABLE Faccao;
 DROP TABLE NacaoFaccao;
-DROP TABLE OrbitaPlaneta;
-DROP TABLE Comunidade;
 DROP TABLE Habitacao;
 DROP TABLE Participa;
+DROP TABLE Faccao;
+DROP TABLE OrbitaEstrela;
+DROP TABLE Comunidade;
+DROP TABLE Lider;
+DROP TABLE Especie;
+DROP TABLE Estrela;
+DROP TABLE Planeta;
+DROP TABLE Nacao;
+DROP TABLE Federacao;
 
 CREATE TABLE Federacao(--Federacao
     Nome VARCHAR2(256),

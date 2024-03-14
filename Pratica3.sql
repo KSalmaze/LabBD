@@ -201,7 +201,8 @@ INSERT INTO OrbitaEstrela (Orbitante, Orbitada, Distancia_Min, Distancia_Max, Pe
 
 INSERT INTO OrbitaEstrela (Orbitante, Orbitada, Distancia_Min, Distancia_Max, Periodo)
     VALUES (256, 318, '220', '10', '80');
-
+INSERT INTO OrbitaEstrela (Orbitante, Orbitada, Distancia_Min, Distancia_Max, Periodo)
+    VALUES (64,256, '100', '200', '5');
 -- Tabela Planeta
 
 INSERT INTO Planeta (Designacao_Astronomica, Massa, Raio)
@@ -291,3 +292,96 @@ INSERT INTO Participa (Faccao, Especie, NomeEspecie)
     VALUES ('Vetistas', 'Semi-Humanos', 'O Alto');
 
 -- 3)
+
+-- a)
+SELECT F.Nome, F.Ideologia, F.Lider, L.Especie, L.Nacao
+    FROM Faccao F
+    JOIN Lider L ON F.Lider = L.CPI;
+
+-- b)
+INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
+    VALUES ('44412', 'Ricardo', 'Vice', 'Jemison', 'Semi-Humanos');
+
+SELECT L.CPI, L.Nome, L.Nacao, L.Especie, E.Planeta_Origem, F.Nome
+    FROM Lider L
+    JOIN Especie E ON L.Especie = E.Nome_Cientifico 
+    LEFT JOIN Faccao F ON L.CPI = F.Lider;
+
+-- c)
+
+INSERT INTO OrbitaEstrela (Orbitante, Orbitada, Distancia_Min, Distancia_Max, Periodo)
+    VALUES (64,256, '100', '200', '5');
+
+SELECT O.Nome, O.Classificacao, E.Nome, E.Classificacao
+    FROM Estrela E
+    JOIN OrbitaEstrela OE ON E.Id_Catalogo = OE.Orbitante
+    JOIN Estrela O ON OE.Orbitada = O.Id_Catalogo
+    ORDER BY O.Nome;
+
+-- d)
+
+INSERT INTO Habitacao (Planeta, Especie, NomeEspecie, Data_Ini)
+    VALUES ('Tormenta', 'Cachimbus-Cachunbenses', 'Rio de Janeiro', TO_DATE('01/01/2200', 'DD/MM/YYYY'));
+
+INSERT INTO Habitacao (Planeta, Especie, NomeEspecie, Data_Ini)
+    VALUES ('Tormenta', 'Semi-Humanos', 'O Alto', TO_DATE('01/01/2200', 'DD/MM/YYYY'));
+
+INSERT INTO Planeta (Designacao_Astronomica, Massa, Raio, Composicao, Classicacao)
+    VALUES ('Tormenta', 200, 20, 'Nitrogenio e Amonia', 'Rochosos');
+
+
+SELECT 
+    p.designacao_astronomica AS planeta,
+    COUNT(CASE WHEN e.eh_inteligente = 'sim' THEN 1 END) AS qtd_comunidades_inteligentes
+  FROM 
+    PLANETA p
+    LEFT JOIN HABITACAO h ON p.designacao_astronomica = h.planeta AND h.data_fim IS NULL
+    LEFT JOIN COMUNIDADE c ON h.especie = c.especie AND h.NomeEspecie = c.nome
+    LEFT JOIN ESPECIE e ON c.especie = e.nome_cientifico
+  GROUP BY p.designacao_astronomica;
+
+-- e)
+
+SELECT P.Designacao_Astronomica, E.Nome_Cientifico, COUNT(*)
+    FROM Planeta P
+    JOIN Habitacao H 
+        ON P.Designacao_Astronomica = H.Planeta AND 
+        H.Data_Fim IS NULL
+    JOIN Especie E
+        ON H.Especie = E.Nome_Cientifico
+    join Comunidade C 
+        ON E.Nome_Cientifico = C.Especie
+    GROUP BY P.Designacao_Astronomica, E.Nome_Cientifico;
+
+-- f)
+
+INSERT INTO Planeta (Designacao_Astronomica, Massa, Raio, Composicao, Classicacao)
+    VALUES ('Nebuloso', 200, 20, 'Nitrogenio e Amonia', 'Rochosos');
+
+INSERT INTO OrbitaPlaneta (Planeta, Estrela, Distancia_Min, Distancia_Max, Periodo)
+    VALUES ('Tormenta', 64, '220', '10', '80');
+    
+INSERT INTO OrbitaPlaneta (Planeta, Estrela, Distancia_Min, Distancia_Max, Periodo)
+    VALUES ('Nebuloso', 64, '220', '10', '80');
+
+-- A estrela 318 (Alpha Centauri) não deve aparecer na consulta
+INSERT INTO OrbitaPlaneta (Planeta, Estrela, Distancia_Min, Distancia_Max, Periodo)
+    VALUES ('Nebuloso', 318, '220', '10', '80');
+
+SELECT E.Nome, E.Classificacao
+FROM Estrela E
+WHERE NOT EXISTS (
+    SELECT OP1.Planeta
+    FROM OrbitaPlaneta OP1
+    WHERE OP1.Estrela = (
+        SELECT E2.Id_Catalogo
+        FROM Estrela E2
+        WHERE E2.Nome = 'Walter'
+    )
+    AND NOT EXISTS (
+        SELECT OP2.Planeta
+        FROM OrbitaPlaneta OP2
+        WHERE OP2.Planeta = OP1.Planeta
+        AND OP2.Estrela = E.Id_Catalogo
+    )
+);

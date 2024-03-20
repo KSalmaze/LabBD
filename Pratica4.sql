@@ -54,3 +54,34 @@ que seja comparados, enquanto sem a utilização da mesma a busca é direta.
 */
 
 -- b)
+
+
+/*
+SEM INDEX
+---------------------------------------------------------------------------
+| Id  | Operation         | Name  | Rows  | Bytes | Cost (%CPU)| Time     |
+---------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |       |   498 | 14940 |    69   (2)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| NACAO |   498 | 14940 |    69   (2)| 00:00:01 |
+---------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   1 - filter(UPPER("NOME")='MINUS MAGNI.')
+
+COM INDEX
+
+------------------------------------------------------------------------------------------------------
+| Id  | Operation                           | Name           | Rows  | Bytes | Cost (%CPU)| Time     |
+------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                    |                |   498 | 14940 |    67   (0)| 00:00:01 |
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| NACAO          |   498 | 14940 |    67   (0)| 00:00:01 |
+|*  2 |   INDEX RANGE SCAN                  | IDX_UPPER_NOME |   199 |       |     1   (0)| 00:00:01 |
+------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - access(UPPER("NOME")='MINUS MAGNI.')
+*/

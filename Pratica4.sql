@@ -54,9 +54,16 @@ que seja comparados, enquanto sem a utilização da mesma a busca é direta.
 */
 
 -- b)
-
+CREATE INDEX idx_upper_nome ON nacao (UPPER(nome));
 
 /*
+Devido ao fato do indice ter sido criado na coluna upper(nome), o banco pode usar esse índice para
+localizar rapidamente as linhas que correspondem ao valor especificado.
+*/
+
+/*
+c)
+
 SEM INDEX
 ---------------------------------------------------------------------------
 | Id  | Operation         | Name  | Rows  | Bytes | Cost (%CPU)| Time     |
@@ -84,4 +91,7 @@ Predicate Information (identified by operation id):
 ---------------------------------------------------
  
    2 - access(UPPER("NOME")='MINUS MAGNI.')
+
+As principais diferenças estão no uso da CPU e o acesso não é mais na tabela completa. 
+
 */

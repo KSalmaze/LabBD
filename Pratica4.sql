@@ -47,5 +47,10 @@ Predicate Information (identified by operation id):
 --3)
 -- a)
 /*
+
+A principal diferença se deve ao fato de que ao utilizar UPPER o sistema precisa percorrer todas os dados da "nação" para
+que seja comparados, enquanto sem a utilização da mesma a busca é direta. 
     
 */
+
+-- b)

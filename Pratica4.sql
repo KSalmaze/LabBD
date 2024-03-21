@@ -163,3 +163,34 @@ Predicate Information (identified by operation id):
    Foi possível observer, através das tabelas, a redução de custo/cpu apenas para o intervalo de 0.1 e 10 justamente pelo
    fato explicitado.
 */
+
+--5)
+-- a)
+
+/*
+SEM INDEX
+-----------------------------------------------------------------------------
+| Id  | Operation         | Name    | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |         | 24997 |   707K|    70   (3)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| ESPECIE | 24997 |   707K|    70   (3)| 00:00:01 |
+-----------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   1 - filter("INTELIGENTE"='V')
+
+COM INDEX
+-----------------------------------------------------------------------------
+| Id  | Operation         | Name    | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |         | 24997 |   707K|    70   (3)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| ESPECIE | 24997 |   707K|    70   (3)| 00:00:01 |
+-----------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   1 - filter("INTELIGENTE"='F')
+*/

@@ -214,6 +214,7 @@ o uso ineficiente de recursos.
 --6)
 --a)
 
+CREATE INDEX index_classificacao_massa ON estrela(classificacao, massa);
 /*
 SEM INDEX
 -----------------------------------------------------------------------------

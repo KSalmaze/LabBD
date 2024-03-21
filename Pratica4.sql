@@ -95,3 +95,62 @@ Predicate Information (identified by operation id):
 As principais diferenças estão no uso da CPU e o acesso não é mais na tabela completa. 
 
 */
+
+--4)
+-- a)
+
+/*
+PRIMEIRA CONSULTA 
+-----------------------------------------------------------------------------
+| Id  | Operation         | Name    | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |         |     6 |   354 |   137   (1)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| PLANETA |     6 |   354 |   137   (1)| 00:00:01 |
+-----------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   1 - filter("MASSA"<=10 AND "MASSA">=0.1)
+
+SEGUNDA CONSULTA
+-----------------------------------------------------------------------------
+| Id  | Operation         | Name    | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |         |  1580 | 93220 |   137   (1)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| PLANETA |  1580 | 93220 |   137   (1)| 00:00:01 |
+-----------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   1 - filter("MASSA"<=3000 AND "MASSA">=0.1)
+
+COM INDEX
+PRIMEIRA CONSULTA
+----------------------------------------------------------------------------------------------------------
+| Id  | Operation                           | Name               | Rows  | Bytes | Cost (%CPU)| Time     |
+----------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                    |                    |     6 |   354 |     9   (0)| 00:00:01 |
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| PLANETA            |     6 |   354 |     9   (0)| 00:00:01 |
+|*  2 |   INDEX RANGE SCAN                  | INDEX_MASS_PLANETA |     6 |       |     2   (0)| 00:00:01 |
+----------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - access("MASSA">=0.1 AND "MASSA"<=10)
+
+SEGUNDA CONSULTA
+-----------------------------------------------------------------------------
+| Id  | Operation         | Name    | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |         |  1580 | 93220 |   137   (1)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| PLANETA |  1580 | 93220 |   137   (1)| 00:00:01 |
+-----------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   1 - filter("MASSA"<=3000 AND "MASSA">=0.1)
+*/

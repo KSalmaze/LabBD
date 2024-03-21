@@ -98,6 +98,8 @@ As principais diferenças estão no uso da CPU e o acesso não é mais na tabela
 
 --4)
 -- a)
+-- b)
+CREATE INDEX index_mass_planeta ON planeta (massa);
 
 /*
 PRIMEIRA CONSULTA 

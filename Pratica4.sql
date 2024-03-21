@@ -243,3 +243,20 @@ Predicate Information (identified by operation id):
  
    2 - access("CLASSIFICACAO"='M3' AND "MASSA"<1)
 */
+
+-- b)
+
+/*
+b.1) select * from estrela where classificacao = 'M3' or massa < 1
+o indice não é utilizado pois o "OR" implica que terá que ser acessada toda a base de dados de qualquer forma.
+
+b.2)select * from estrela where classificacao = 'M3'
+O indice é utilzado pois classificação é o atributo principal do index.
+
+b.3)select * from estrela where massa < 1;
+O indice não é utilizado pois teria que acessar cada classificação e suas respectivas massas,
+e, portanto, acessa a tabela toda e dessa forma não vale a pena utilizar o index.
+
+
+*/
+

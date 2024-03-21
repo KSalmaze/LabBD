@@ -210,3 +210,35 @@ de V e F não seja otimizada.
 Em contrapartida, temos que entre as desvantagens temos: custo de inserção, atualização e manutenção e, também, 
 o uso ineficiente de recursos.
 */
+
+--6)
+--a)
+
+/*
+SEM INDEX
+-----------------------------------------------------------------------------
+| Id  | Operation         | Name    | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |         |     6 |   276 |    15   (0)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| ESTRELA |     6 |   276 |    15   (0)| 00:00:01 |
+-----------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   1 - filter("CLASSIFICACAO"='M3' OR "MASSA"<1)
+
+COM INDEX
+-----------------------------------------------------------------------------------------------------------------
+| Id  | Operation                           | Name                      | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                    |                           |     1 |    46 |     3   (0)| 00:00:01 |
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| ESTRELA                   |     1 |    46 |     3   (0)| 00:00:01 |
+|*  2 |   INDEX RANGE SCAN                  | INDEX_CLASSIFICACAO_MASSA |     1 |       |     2   (0)| 00:00:01 |
+-----------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - access("CLASSIFICACAO"='M3' AND "MASSA"<1)
+*/

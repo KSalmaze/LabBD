@@ -97,10 +97,12 @@ As principais diferenças estão no uso da CPU e o acesso não é mais na tabela
 */
 
 --4)
--- a)
 -- b)
-CREATE INDEX index_mass_planeta ON planeta (massa);
+CREATE INDEX index_mass_planeta ON planeta (massa); 
+-- Escolhemos esse índice porque as consultas envolvem uma faixa de valores na coluna "massa" 
+-- e, assim, o banco pode rapidamente identificar quais linhas na tabela "planeta" possuem valores de massa dentro do intervalo requisitado
 
+-- c)
 /*
 PRIMEIRA CONSULTA 
 -----------------------------------------------------------------------------
@@ -155,4 +157,9 @@ Predicate Information (identified by operation id):
 ---------------------------------------------------
  
    1 - filter("MASSA"<=3000 AND "MASSA">=0.1)
+
+   Podemos observar que o index só é utilizado com o range de intervalo é menor, pois, com o intervalo muito grande
+   vale mais a pena percorrer a tabela toda. 
+   Foi possível observer, através das tabelas, a redução de custo/cpu apenas para o intervalo de 0.1 e 10 justamente pelo
+   fato explicitado.
 */

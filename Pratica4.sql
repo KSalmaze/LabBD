@@ -195,4 +195,18 @@ Predicate Information (identified by operation id):
 ---------------------------------------------------
  
    1 - filter("INTELIGENTE"='V')
+
+
+O index não foi usado pois, a quantidade de V e F é são basicamente iguais, e não valeria a pena utiliza-lo, e sim 
+fazer a consulta na tabela toda. 
+V = 24940
+F = 25054
+
+Diante o cenário encontrado, as vantagens de utilizarmos o index é que há flexibilidade para consultas futuras, 
+ou seja, se em algum momento o número de V ou F aumentar. Outro ponto que podemos citar como vantagem é a eficiencia
+para consultas combinadas, uma vez que o bitmap pode fazer a interseção entre esses filtros, mesmo que a consulta
+de V e F não seja otimizada. 
+
+Em contrapartida, temos que entre as desvantagens temos: custo de inserção, atualização e manutenção e, também, 
+o uso ineficiente de recursos.
 */

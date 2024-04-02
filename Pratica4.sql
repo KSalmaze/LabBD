@@ -47,10 +47,8 @@ Predicate Information (identified by operation id):
 --3)
 -- a)
 /*
-
-A principal diferença se deve ao fato de que ao utilizar UPPER o sistema precisa percorrer todas os dados da "nação" para
-que seja comparados, enquanto sem a utilização da mesma a busca é direta. 
-    
+A principal diferença se deve ao fato de que ao utilizar UPPER o sistema precisa percorrer todas os dados de "nação" para
+aplicar a função, enquanto sem a utilização da mesma a busca é direta.   
 */
 
 -- b)
@@ -97,6 +95,12 @@ As principais diferenças estão no uso da CPU e o acesso não é mais na tabela
 */
 
 --4)
+-- a)
+   /*
+      Na consulta sem indice o banco de dados precisa percorrer toda a tabela, o que gera alto
+      custo de CPU e tempo.
+   */
+
 -- b)
 CREATE INDEX index_mass_planeta ON planeta (massa); 
 -- Escolhemos esse índice porque as consultas envolvem uma faixa de valores na coluna "massa" 
@@ -166,7 +170,9 @@ Predicate Information (identified by operation id):
 
 --5)
 -- a)
-
+   /*
+      A consulta sem uso de indices percorre a tabela inteiro, necessitando de uma quantidade consideravel de recursos de CPU
+   */
 --b)
 CREATE BITMAP INDEX index_inteligente ON especie(inteligente);
 /*
@@ -281,3 +287,41 @@ COM INDEX
 |   2 |   INDEX FAST FULL SCAN| ESTRELA_CLASSIFICACAO |  6586 | 32930 |     8   (0)| 00:00:01 |
 -----------------------------------------------------------------------------------------------
 */
+
+-- 8)
+
+/*
+   Bitmap Join Index armazenando correspondências pré-computadas em bitmaps,
+      para otimizar consultas que envolvem junções entre tabelas.
+*/
+
+-- Consulta a ser otimizada
+SELECT F.NOME AS FEDERACAO, N.NOME AS NACAO
+   FROM FEDERACAO F
+   JOIN NACAO N ON F.NOME = N.FEDERACAO;
+
+
+-- Bitmap Join Index
+
+/*
+CREATE BITMAP INDEX index_federacao_nacao ON nacao(federacao)
+   FROM nacao, federacao
+WHERE nacao.federacao = federacao.nome;
+*/
+
+/*
+   CONSULTA SEM INDEX
+---------------------------------------------------------------------------
+| Id  | Operation         | Name  | Rows  | Bytes | Cost (%CPU)| Time     |
+---------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |       | 31441 |   552K|    69   (2)| 00:00:01 |
+|*  1 |  TABLE ACCESS FULL| NACAO | 31441 |   552K|    69   (2)| 00:00:01 |
+---------------------------------------------------------------------------
+
+
+   CONSULTA COM INDEX
+
+
+
+*/
+

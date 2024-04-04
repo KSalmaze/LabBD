@@ -70,11 +70,15 @@ INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
 INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
     VALUES ('988.142.789-13', 'Oliver', 'OFICIAL', 'Cordantes', 'Id illum fugit');
 
+INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
+    VALUES ('688.142.789-93', 'Jo', 'OFICIAL', 'Cordantes', 'Id illum fugit');
+
 -- a)
 
 -- Criação da View
 CREATE VIEW viewa AS
-    SELECT Nome, Lider, Ideologia FROM Faccao;
+    SELECT Nome, Lider, Ideologia FROM Faccao
+        WHERE Ideologia = 'TRADICIONALISTA';
 
 -- inserções
 INSERT INTO viewa 
@@ -86,6 +90,24 @@ INSERT INTO viewa
         VALUES ('FoG', '988.142.789-13', 'PROGRESSITA');
 
 /*
-
+Consultando a viewa apenas a faccao mad foi mostrada, pois a view filtra por ideologia tradicionalista,
+    já na tabela de faccao fog e a mad são mostradas, já que não há nenhum filtro.
 */
-        
+
+-- b)
+
+-- Criação da view
+CREATE VIEW viewb AS
+    SELECT Nome, Lider, Ideologia FROM Faccao
+        WHERE Ideologia = 'TRADICIONALISTA'
+            WITH CHECK OPTION;
+
+-- inserções
+INSERT INTO viewb 
+    (Nome, Lider, Ideologia)
+        VALUES ('Ganesh', '688.142.789-93', 'TOTALITARIA');
+
+/*
+A tupla não pode ser inserida pois viola a condição WITH CHECK OPTION
+*/
+

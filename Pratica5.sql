@@ -54,4 +54,38 @@ Erro de SQL: ORA-42399: não é possível efetuar uma operação de DML em uma v
 Esse erro ocorre pois a view foi criada com a cláusula WITH READ ONLY, 
 que impede a realização de operações de DML (Data Manipulation Language) como INSERT, UPDATE e DELETE.
 */
---
+
+-- 2)
+
+-- Dados para teste
+INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
+    VALUES ('562.987.789-13', 'Jorge', 'OFICIAL', 'Cordantes', 'Id illum fugit');
+    
+INSERT INTO Faccao (Nome, Lider, Ideologia, QTD_NACOES)
+    VALUES ('Jorgistas', '562.987.789-13', 'TRADICIONALISTA', 3);
+
+INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
+    VALUES ('988.987.789-13', 'Mathues', 'OFICIAL', 'Cordantes', 'Id illum fugit');
+
+INSERT INTO Lider (CPI, Nome, Cargo, Nacao, Especie)
+    VALUES ('988.142.789-13', 'Oliver', 'OFICIAL', 'Cordantes', 'Id illum fugit');
+
+-- a)
+
+-- Criação da View
+CREATE VIEW viewa AS
+    SELECT Nome, Lider, Ideologia FROM Faccao;
+
+-- inserções
+INSERT INTO viewa 
+    (Nome, Lider, Ideologia)
+        VALUES ('Mad', '988.987.789-13', 'TRADICIONALISTA');
+
+INSERT INTO viewa 
+    (Nome, Lider, Ideologia)
+        VALUES ('FoG', '988.142.789-13', 'PROGRESSITA');
+
+/*
+
+*/
+        

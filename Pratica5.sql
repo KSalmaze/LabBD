@@ -111,3 +111,24 @@ INSERT INTO viewb
 A tupla não pode ser inserida pois viola a condição WITH CHECK OPTION
 */
 
+-- 3)
+
+-- Dados para teste
+INSERT INTO Orbita_Planeta (Estrela, Planeta) VALUES ('GJ 9798','Quia eum.');
+INSERT INTO Orbita_Planeta (Estrela, Planeta) VALUES ('GJ 9798','14 Her b');
+INSERT INTO Orbita_Planeta (Estrela, Planeta) VALUES ('80Pi 1Cyg','Quidem id.');
+
+-- Criação da view
+CREATE VIEW viewpe AS
+    SELECT E.NOME, E.X, E.Y, E.Z, P.ID_ASTRO, P.CLASSIFICACAO 
+        FROM  Estrela E JOIN Orbita_Planeta OP ON
+            E.ID_ESTRELA = OP.Estrela JOIN Planeta P ON
+                OP.Planeta = P.ID_ASTRO;
+
+-- a)
+
+
+-- b)
+SELECT E.ID_ESTRELA, COUNT(*) FROM 
+    viewpe V JOIN Estrela E ON V.X = E.X AND V.Y = E.Y AND V.Z = E.Z
+        GROUP BY E.ID_ESTRELA;

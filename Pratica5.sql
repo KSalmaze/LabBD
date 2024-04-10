@@ -126,9 +126,20 @@ CREATE VIEW viewpe AS
                 OP.Planeta = P.ID_ASTRO;
 
 -- a)
+/*
+    Testes
+    INSERT INTO viewpe (ID_ASTRO, CLASSIFICACAO) VALUES ('asjidh','ASD');
+    INSERT INTO viewpe (Nome, X, Y, Z) VALUES ('Tatois',12,13,14);
 
+    Erro:
+    "cannot modify a column which maps to a non key-preserved table"
+
+    Tanto estrela quanto planetas podem se repitir na view, logo nenhuma das duas tem preservação
+    de chaves, logo a view é não atualizavel.
+*/
 
 -- b)
 SELECT E.ID_ESTRELA, COUNT(*) FROM 
     viewpe V JOIN Estrela E ON V.X = E.X AND V.Y = E.Y AND V.Z = E.Z
         GROUP BY E.ID_ESTRELA;
+

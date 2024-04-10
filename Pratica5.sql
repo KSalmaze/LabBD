@@ -152,4 +152,5 @@ CREATE VIEW viewLider AS SELECT L.CPI, L.Nome, L.Cargo, L.Nacao, N.Federacao, L.
 -- a)
 
 -- b)
-
+INSERT INTO viewLider (CPI, Nome, Cargo, Nacao, Especie) 
+    VALUES('924.456.789-12','Kelvin','OFICIAL', 'Jemison', 'Id illum fugit');

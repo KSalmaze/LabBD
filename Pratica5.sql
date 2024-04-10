@@ -143,3 +143,13 @@ SELECT E.ID_ESTRELA, COUNT(*) FROM
     viewpe V JOIN Estrela E ON V.X = E.X AND V.Y = E.Y AND V.Z = E.Z
         GROUP BY E.ID_ESTRELA;
 
+-- 4)
+-- Criação da view
+CREATE VIEW viewLider AS SELECT L.CPI, L.Nome, L.Cargo, L.Nacao, N.Federacao, L.Especie, E.planeta_or 
+    FROM Lider L JOIN Nacao N ON L.Nacao = N.Nome 
+        JOIN Especie E ON L.Especie = E.Nome;
+
+-- a)
+
+-- b)
+

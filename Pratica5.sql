@@ -150,7 +150,21 @@ CREATE VIEW viewLider AS SELECT L.CPI, L.Nome, L.Cargo, L.Nacao, N.Federacao, L.
         JOIN Especie E ON L.Especie = E.Nome;
 
 -- a)
+/*
+    Lider possui preservação de chave, então ela é atualizavel, mas adicionando somente dados da tabela lider
+*/
 
 -- b)
 INSERT INTO viewLider (CPI, Nome, Cargo, Nacao, Especie) 
     VALUES('924.456.789-12','Kelvin','OFICIAL', 'Jemison', 'Id illum fugit');
+
+UPDATE viewLider set nome = 'Celsius' WHERE CPI = '924.456.789-12';
+
+DELETE FROM viewLider WHERE CPI = '924.456.789-12';
+
+/*
+    Todas as mudanças em lider também são refletidas na tabela lider, pois a view é atualizável.
+*/
+
+-- 5)
+-- a)

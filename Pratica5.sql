@@ -167,4 +167,29 @@ DELETE FROM viewLider WHERE CPI = '924.456.789-12';
 */
 
 -- 5)
+-- Criação da view
+CREATE VIEW viewFaccao (Noma_Facao, CPI_Lider, Nome_Lider, Ideologia) AS SELECT F.Nome, F.Lider, L.Nome, F.Ideologia 
+    FROM Faccao F JOIN Lider L ON F.Lider = L.CPI;
+
 -- a)
+/*
+    Faccao possui preservação de chave, então ela é atualizavel, mas adicionando somente dados da tabela Faccao, 
+        não é possivel adicionar dados de lider.
+*/
+
+-- b)
+INSERT INTO viewFaccao (Noma_Facao, CPI_Lider, Ideologia) 
+    VALUES ('Ganesh', '562.456.789-13', 'TOTALITARIA');
+
+UPDATE viewFaccao SET Noma_Facao = 'PET'
+    WHERE Noma_Facao = 'Ganesh';
+
+DELETE FROM viewFaccao WHERE Noma_Facao = 'PET';
+
+/*
+    Todas as mudanças em faccao também são refletidas na tabela faccao, pois a view é atualizável.
+*/
+
+-- 6)
+-- a)
+

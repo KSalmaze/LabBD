@@ -191,5 +191,53 @@ DELETE FROM viewFaccao WHERE Noma_Facao = 'PET';
 */
 
 -- 6)
--- a)
+-- COM JUNÇÃO
+-- Juntando facção com lider e sua especie
+CREATE MATERIALIZED VIEW viewMatFaccao
+  (Nome_Lider, CPI_Lider, Planeta_Or_Espec_Lider, Nome_Faccao, Indeologia_Faccao)
+  BUILD IMMEDIATE
+  REFRESH COMPLETE ON DEMAND
+    AS SELECT L.Nome, F.Lider, E.Planeta_Or,F.Nome, F.Ideologia 
+        FROM Faccao F JOIN Lider L ON F.Lider = L.CPI
+        JOIN Especie E ON L.Especie = E.Nome;
 
+/*
+    BUILD IMMEDIATE: A view é populada imediatamente
+    REFRESH COMPLETE ON DEMAND: A view é completamente reescrita, e só é atualizada quando solicitada manualmente
+*/
+
+-- COM AGREGAÇÃO
+-- Foi necessário criar um log para a a tabela Faccao
+CREATE MATERIALIZED VIEW LOG ON Faccao
+    WITH ROWID (Ideologia)
+    INCLUDING NEW VALUES;
+
+-- Conta quantas facções com cada ideologia existem 
+CREATE MATERIALIZED VIEW viewFaccaoPorIdeologia 
+    (IDELOGIA, QTD_FACCOES)
+    BUILD DEFERRED
+    REFRESH FAST ON COMMIT
+      AS SELECT Ideologia, COUNT(*) FROM Faccao
+        GROUP BY Ideologia;
+
+/*
+    BUILD DEFERRED: A view é populada quando solicitada
+    REFRESH FAST ON COMMIT: A view é atualizada automaticamente quando um commit é feito
+*/
+
+-- COM ANINHADA
+-- As estrelas que planetas, que tem são o local de origem de alguma especie, orbitam
+CREATE MATERIALIZED VIEW viewMatC (Planeta, Id_Estrela, Nome_Estrela) 
+    BUILD IMMEDIATE
+    REFRESH FORCE ON DEMAND
+    AS SELECT P.ID_ASTRO, e.id_estrela, e.nome FROM
+        Orbita_Planeta Op JOIN (SELECT P.ID_ASTRO 
+        FROM Planeta P JOIN Especie E ON P.ID_ASTRO = E.Planeta_Or) P
+        ON p.id_astro = op.planeta JOIN
+    Estrela E ON op.estrela = e.id_estrela;
+
+/*
+    BUILD IMMEDIATE: A view é populada imediatamente
+    REFRESH FORCE ON DEMAND: Se umaatualização rápida for possível, o Oracle fará uma atualização rápida. 
+    Caso contrário, será feita uma atualização completa, e só é atualizada quando solicitada manualmente
+*/

@@ -46,3 +46,21 @@ EXCEPTION
         dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
         
 END;
+
+DECLARE
+    v_qtd_removidas NUMBER := 0; -- Variável para contar a quantidade de federações removidas
+BEGIN
+    -- Deleta as federações que não possuem nações associadas
+    DELETE FROM federacoes
+    WHERE id_federacao NOT IN (
+        SELECT DISTINCT id_federacao
+        FROM nacoes
+    );
+
+    -- Obtém a quantidade de linhas afetadas pela operação DELETE
+    v_qtd_removidas := SQL%ROWCOUNT;
+
+    -- Imprime a quantidade de federações removidas
+    DBMS_OUTPUT.PUT_LINE('Quantidade de federações removidas: ' || v_qtd_removidas);
+END;
+/

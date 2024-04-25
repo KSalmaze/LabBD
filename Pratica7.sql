@@ -17,7 +17,7 @@ DECLARE
     
     CURSOR c_estrelas IS
         SELECT O.orbitante, E.id_estrela, COUNT(*) AS num_estrelas_orbitantes
-        FROM orbita_estrela O JOIN estrela E
+        FROM orbita_estrela O LEFT JOIN estrela E
         ON o.orbitada = e.nome
         GROUP BY O.orbitante, E.id_estrela
         ORDER BY COUNT(*) DESC;
@@ -37,6 +37,12 @@ BEGIN
     END LOOP;
     
     DBMS_OUTPUT.PUT_LINE('------------------------------------');
-    
     CLOSE c_estrelas;
+    
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        dbms_output.put_line('Nenuma estrela encontrada');
+    WHEN OTHERS THEN
+        dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
+        
 END;

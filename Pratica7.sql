@@ -47,6 +47,8 @@ EXCEPTION
         
 END;
 
+-- 2)
+
 DECLARE
     v_qtd_removidas NUMBER := 0; -- Variável para contar a quantidade de federações removidas
 BEGIN
@@ -63,4 +65,4 @@ BEGIN
     -- Imprime a quantidade de federações removidas
     DBMS_OUTPUT.PUT_LINE('Quantidade de federações removidas: ' || v_qtd_removidas);
 END;
-/
+

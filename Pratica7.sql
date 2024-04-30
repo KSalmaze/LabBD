@@ -48,16 +48,21 @@ EXCEPTION
 END;
 
 -- 2)
+-- Dados para teste
+INSERT INTO FEDERACAO VALUES('Teste B', TO_DATE('25/04/2190', 'DD/MM/YYYY'));
+
+-- Select para verificar os resultados
+SELECT * FROM Federacao WHERE Nome = 'Teste B';
 
 DECLARE
     v_qtd_removidas NUMBER := 0; -- Variável para contar a quantidade de federações removidas
-BEGIN
+BEGIN  
 
-    DELETE FROM Federacao WHERE Nome = 'ICMC';
-    
-    -- Deleta as federações que não possuem nações associadas
-    DELETE FROM Federacao
-        WHERE Nome NOT IN (SELECT Federacao FROM Nacao);
+    -- Deleta as federações que não estão associadas a nações
+    DELETE FROM Federacao WHERE Nome IN (SELECT Nome FROM Federacao
+                                            MINUS SELECT F.Nome FROM
+                                            Federacao F JOIN Nacao N ON
+                                            F.Nome = N.Federacao);
         
     -- Obtém a quantidade de linhas afetadas pela operação DELETE
     v_qtd_removidas := SQL%ROWCOUNT;
@@ -65,6 +70,8 @@ BEGIN
     -- Imprime a quantidade de federações removidas
     DBMS_OUTPUT.PUT_LINE('Quantidade de federações removidas: ' || v_qtd_removidas);
 EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Nenhuma linha encontrada para exclusão.');
     WHEN OTHERS THEN
         dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
 END;
@@ -161,7 +168,7 @@ BEGIN
     dbms_output.put_line('Orbitas removidas: ' || v_orbitas_removidas);
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-        dbms_output.put_line('Nenhuma estrela encontrada');
+        dbms_output.put_line('Nenhuma orbita de planeta atende aos critérios para remoção foi encontrada');
     WHEN OTHERS THEN
         dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
 END;

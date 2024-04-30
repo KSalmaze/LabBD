@@ -119,3 +119,28 @@ END;
 SELECT * FROM Habitacao;
 
 -- 4)
+
+DECLARE
+    v_class_estrela estrela.classificacao%Type := 'Am';
+    v_distancia_para_remocao NUMBER ;
+    v_orbitas_removidas NUMBER := 0;
+    CURSOR c_orbitas IS
+        SELECT *
+        FROM Orbita_Planeta op
+        JOIN Estrela e ON op.Estrela = e.Id_Estrela
+        WHERE e.classificacao = v_class_estrela
+        FOR UPDATE;
+    
+BEGIN
+    v_distancia_para_remocao := 1000;
+
+    FOR r_orbita IN c_orbitas LOOP
+        IF r_orbita.Dist_Min > v_distancia_para_remocao THEN
+            DELETE FROM Orbita_Planeta
+            WHERE CURRENT OF c_orbitas;
+            v_orbitas_removidas := v_orbitas_removidas + 1;
+        END IF;
+    END LOOP;
+    
+    dbms_output.put_line('Orbitas removidas: ' || v_orbitas_removidas);
+END;

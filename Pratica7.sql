@@ -41,7 +41,7 @@ BEGIN
     
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-        dbms_output.put_line('Nenuma estrela encontrada');
+        dbms_output.put_line('Nenhuma estrela encontrada');
     WHEN OTHERS THEN
         dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
         
@@ -52,17 +52,49 @@ END;
 DECLARE
     v_qtd_removidas NUMBER := 0; -- Variável para contar a quantidade de federações removidas
 BEGIN
-    -- Deleta as federações que não possuem nações associadas
-    DELETE FROM federacoes
-    WHERE id_federacao NOT IN (
-        SELECT DISTINCT id_federacao
-        FROM nacoes
-    );
 
+    DELETE FROM Federacao WHERE Nome = 'ICMC';
+    
+    -- Deleta as federações que não possuem nações associadas
+    DELETE FROM Federacao
+        WHERE Nome NOT IN (SELECT Federacao FROM Nacao);
+        
     -- Obtém a quantidade de linhas afetadas pela operação DELETE
     v_qtd_removidas := SQL%ROWCOUNT;
 
     -- Imprime a quantidade de federações removidas
     DBMS_OUTPUT.PUT_LINE('Quantidade de federações removidas: ' || v_qtd_removidas);
+EXCEPTION
+    WHEN OTHERS THEN
+        dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
 END;
 
+-- 3)
+set serveroutput on;
+
+SELECT NOME
+    FROM comunidade WHERE 
+        NOME = 'USP';
+
+INSERT INTO Comunidade VALUES('A','USP',250);
+
+DECLARE
+    -- Dados de planeta
+    v_planeta planeta.ID_ASTRO%Type;
+    
+    -- Dados de comunidade
+    v_especie comunidade.ESPECIE%Type;
+    v_nome comunidade.NOME%Type;
+    v_populacao comunidade.QTD_HABITANTES%Type;
+    
+BEGIN 
+    v_planeta := 'A a ex.';
+    v_especie := 'A';
+    v_nome := 'USP';
+    
+    SELECT qtd_habitantes INTO v_populacao
+    FROM comunidade WHERE 
+        ESPECIE = v_especie AND
+        NOME = v_nome;
+    dbms_output.put_line('Quantidade de habitantes = ' || v_populacao);
+END;

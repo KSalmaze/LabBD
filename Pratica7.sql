@@ -119,6 +119,22 @@ END;
 SELECT * FROM Habitacao;
 
 -- 4)
+-- Dados para teste
+INSERT INTO Estrela (id_estrela, Nome, x, y, z, classificacao) VALUES('OPNG 56', 'Jeta', 12, 15, 78, 'plwa');
+INSERT INTO Estrela (id_estrela, Nome, x, y, z, classificacao) VALUES('OYYG 56', 'Roma', 77, 15, 78, 'plwa');
+INSERT INTO Estrela (id_estrela, Nome, x, y, z, classificacao) VALUES('OPJU 56', 'Punto', 12, 15, 92, 'plwa');
+INSERT INTO Estrela (id_estrela, Nome, x, y, z, classificacao) VALUES('OFDG 56', 'Cor', 12, 56, 78, 'plwa');
+INSERT INTO Estrela (id_estrela, Nome, x, y, z, classificacao) VALUES('SSSG 56', 'Uno', 2, 15, 78, 'plwa');
+
+INSERT INTO Orbita_Planeta (Planeta, Estrela, dist_min) VALUES ('XO-5 b', 'OPNG 56', 1500);
+INSERT INTO Orbita_Planeta (Planeta, Estrela, dist_min) VALUES ('Wolf 1061 c', 'OYYG 56', 800);
+INSERT INTO Orbita_Planeta (Planeta, Estrela, dist_min) VALUES ('WASP-87 A b', 'OPJU 56', 50);
+INSERT INTO Orbita_Planeta (Planeta, Estrela, dist_min) VALUES ('WASP-96 b', 'OFDG 56', 6000);
+INSERT INTO Orbita_Planeta (Planeta, Estrela, dist_min) VALUES ('WISE0047', 'SSSG 56', 1000);
+
+-- Select para verificar os resultados
+SELECT * FROM orbita_planeta Op JOIN Estrela E
+    ON op.estrela= E.id_estrela WHERE e.classificacao = 'plwa';
 
 DECLARE
     v_class_estrela estrela.classificacao%Type := 'Am';
@@ -143,4 +159,9 @@ BEGIN
     END LOOP;
     
     dbms_output.put_line('Orbitas removidas: ' || v_orbitas_removidas);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        dbms_output.put_line('Nenhuma estrela encontrada');
+    WHEN OTHERS THEN
+        dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
 END;

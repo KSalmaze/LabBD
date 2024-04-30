@@ -70,13 +70,9 @@ EXCEPTION
 END;
 
 -- 3)
-set serveroutput on;
-
-SELECT NOME
-    FROM comunidade WHERE 
-        NOME = 'USP';
-
-INSERT INTO Comunidade VALUES('A','USP',250);
+-- Dados para teste
+INSERT INTO COMUNIDADE VALUES('Ad quod','O baixo',10000);
+INSERT INTO COMUNIDADE VALUES('Ad quod','O medio',500);
 
 DECLARE
     -- Dados de planeta
@@ -87,14 +83,39 @@ DECLARE
     v_nome comunidade.NOME%Type;
     v_populacao comunidade.QTD_HABITANTES%Type;
     
+    v_data DATE;
+    
 BEGIN 
     v_planeta := 'A a ex.';
-    v_especie := 'A';
-    v_nome := 'USP';
+    v_especie := 'Ad quod';
+    v_nome := 'O baixo';
+    
+    v_data := SYSDATE;
     
     SELECT qtd_habitantes INTO v_populacao
     FROM comunidade WHERE 
         ESPECIE = v_especie AND
         NOME = v_nome;
+        
     dbms_output.put_line('Quantidade de habitantes = ' || v_populacao);
+        
+    IF v_populacao <= 1000
+        THEN 
+        v_data := SYSDATE + INTERVAL '100' YEAR;
+    ELSE
+        v_data := SYSDATE + INTERVAL '50' YEAR;
+    END IF;
+    
+    INSERT INTO Habitacao VALUES(v_planeta, v_especie, v_nome, SYSDATE, v_data);
+    
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        dbms_output.put_line('Comunidade não encontrada');
+    WHEN OTHERS THEN
+        dbms_output.put_line('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
 END;
+
+-- Para vefificar se a inserção foi realizada com sucesso
+SELECT * FROM Habitacao;
+
+-- 4)

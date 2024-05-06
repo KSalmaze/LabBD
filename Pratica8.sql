@@ -29,7 +29,9 @@ INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('Kepler-2
 INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('HD 96992 b','Ad ab iure', 'Comunidade 4', TO_DATE('25/04/2600', 'DD/MM/YYYY'));
 INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('K2-62 c','Ad quod', 'Comunidade 5', TO_DATE('25/06/2140', 'DD/MM/YYYY'));
 
-SELECT F.Nome, D.Planeta FROM
+SELECT F.Nome, D.Planeta, C.nome FROM
     Faccao F JOIN Nacao_Faccao NF ON f.nome = nf.faccao
     JOIN NACAO N ON nf.nacao = n.nome
-    JOIN DOMINANCIA D ON d.nacao = n.nome;
+    JOIN DOMINANCIA D ON d.nacao = n.nome
+    JOIN Habitacao H ON h.planeta = d.planeta
+    JOIN Comunidade C ON c.especie = h.especie AND c.nome = h.comunidade;

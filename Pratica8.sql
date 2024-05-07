@@ -36,61 +36,49 @@ SELECT F.Nome, D.Planeta, C.nome FROM
     JOIN Habitacao H ON h.planeta = d.planeta
     JOIN Comunidade C ON c.especie = h.especie AND c.nome = h.comunidade;
 
-/*
-    FOR r_comunidade IN c_comunidades LOOP
-        BEGIN
-            SELECT COMUNIDADE INTO v_dummy FROM PARTICIPA P WHERE 
-                r_comunidade.NOME = P.comunidade AND
-                v_faccao = p.faccao AND 
-                r_comunidade.especie = p.especie;
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-                comunidades.EXTEND;
-                comunidades(comunidades.LAST) := r_comunidade.NOME;
-        END;
-    END LOOP;
-*/
-
 DECLARE
-    -- Declare uma variável para armazenar a entrada do usuário (nome da facção).
-    v_faccao FACCAO.NOME%TYPE := 'FoG'; -- substitua 'NomeDaFaccao' pelo nome da facção desejada
-
-    -- Declare um tipo de tabela aninhada para armazenar as comunidades que serão inseridas.
-    TYPE ComunidadesTab IS TABLE OF VARCHAR2(100);
-    comunidades ComunidadesTab;
-    
-    -- Declare um cursor para selecionar as comunidades que habitam planetas dominados por nações onde a facção está presente,
-    -- mas que ainda não participam da facção.
-    CURSOR c_comunidades IS
-        SELECT C.NOME, C.Especie
-        FROM FACCAO F
-        JOIN NACAO_FACCAO NF ON F.NOME = NF.FACCAO AND F.NOME = v_faccao
-        JOIN NACAO N ON NF.NACAO = N.NOME
-        JOIN DOMINANCIA D ON D.NACAO = N.NOME
-        JOIN HABITACAO H ON H.PLANETA = D.PLANETA
-        JOIN COMUNIDADE C ON C.ESPECIE = H.ESPECIE AND C.NOME = H.COMUNIDADE
-        LEFT JOIN PARTICIPA P ON P.FACCAO = F.NOME AND P.ESPECIE = C.ESPECIE AND P.COMUNIDADE = C.NOME
-        WHERE P.FACCAO IS NULL;
+    v_faccao faccao.nome%TYPE;
+    TYPE Comunidades_Table IS TABLE OF comunidade%ROWTYPE;
+    v_comunidades Comunidades_Table;
 BEGIN
-    -- Use um cursor FOR LOOP para adicionar cada comunidade à coleção.
-    FOR r_comunidade IN c_comunidades LOOP
-        comunidades.EXTEND;
-        comunidades(comunidades.LAST) := r_comunidade.NOME;
+    v_faccao := 'FoG'; 
+    v_comunidades := Comunidades_Table();
+    
+    -- Preencher a tabela aninhada com os resultados da consulta
+    FOR c_row IN (
+        SELECT C.NOME, C.Especie
+        FROM NACAO_FACCAO NF
+        JOIN NACAO N ON NF.Nacao = N.Nome AND NF.Faccao = v_faccao
+        JOIN DOMINANCIA D ON D.Nacao = N.Nome
+        JOIN HABITACAO H ON H.Planeta = D.Planeta
+        JOIN COMUNIDADE C ON C.Especie = H.Especie AND C.Nome = H.Comunidade
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM PARTICIPA P
+            WHERE P.Especie = H.Especie
+            AND P.Comunidade = H.Comunidade
+        )
+    ) LOOP
+        v_comunidades.EXTEND;
+        v_comunidades(v_comunidades.LAST).Nome := c_row.Nome;
+        v_comunidades(v_comunidades.LAST).Especie := c_row.Especie;
     END LOOP;
-
-    -- Use FORALL para inserir todas as comunidades da coleção na tabela `Participa`.
-    FORALL i IN comunidades.FIRST..comunidades.LAST
-        SELECT * FROM PARTICIPA P WHERE 
-            comunidades(i) = P.comunidade AND
-            v_faccao = p.faccao AND 
-            c_comunidades(i).especie = p.especie;
-        IF SQL%NOTFOUND THEN
-            DBMS_OUTPUT.PUT_LINE('Vai');
-        ELSE 
-            DBMS_OUTPUT.PUT_LINE('Não vai');
-        END IF;
+    
+    FORALL i IN 1..v_comunidades.COUNT
+        INSERT INTO Participa (Faccao, Especie, Comunidade) VALUES (v_faccao, v_comunidades(i).Especie ,v_comunidades(i).Nome);
+    
+    -- Exibir mensagem de sucesso
+    DBMS_OUTPUT.PUT_LINE('Comunidades cadastradas como novas participantes da facção.');
+    
 EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Nenhuma comunidade encontrada para cadastro.');
+        
     WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Erro: ' || SQLERRM);
-        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
 END;
+
+-- Mostrar as saidas e verificar as data e tb outras exceptions
+-- Falar sobre forall
+
+-- 2)

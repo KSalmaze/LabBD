@@ -29,13 +29,6 @@ INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('Kepler-2
 INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('HD 96992 b','Ad ab iure', 'Comunidade 4', TO_DATE('25/04/2600', 'DD/MM/YYYY'));
 INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('K2-62 c','Ad quod', 'Comunidade 5', TO_DATE('25/06/2140', 'DD/MM/YYYY'));
 
-SELECT F.Nome, D.Planeta, C.nome FROM
-    Faccao F JOIN Nacao_Faccao NF ON f.nome = nf.faccao
-    JOIN NACAO N ON nf.nacao = n.nome
-    JOIN DOMINANCIA D ON d.nacao = n.nome
-    JOIN Habitacao H ON h.planeta = d.planeta
-    JOIN Comunidade C ON c.especie = h.especie AND c.nome = h.comunidade;
-
 DECLARE
     v_faccao faccao.nome%TYPE;
     TYPE Comunidades_Table IS TABLE OF comunidade%ROWTYPE;
@@ -78,7 +71,84 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Erro nro: ' || SQLCODE || '. Mensagem: ' || SQLERRM);
 END;
 
+/*  TESTANDO
+
+CONSULTA PARA TESTE:*/
+SELECT F.Nome, D.Planeta, C.nome FROM
+    Faccao F JOIN Nacao_Faccao NF ON f.nome = 'FoG'
+    JOIN NACAO N ON nf.nacao = n.nome
+    JOIN DOMINANCIA D ON d.nacao = n.nome
+    JOIN Habitacao H ON h.planeta = d.planeta
+    JOIN Comunidade C ON c.especie = h.especie AND c.nome = h.comunidade;
+
+/*
+
+*/
+
 -- Mostrar as saidas e verificar as data e tb outras exceptions
 -- Falar sobre forall
 
 -- 2)
+
+-- Para testar tive que limitar o for com os prints, pois a quantidade de dados era muito grande e
+-- estava demorando muito
+
+DECLARE
+    TYPE t_planeta_info IS RECORD (
+        planeta VARCHAR2(15),
+        nacao_dominante VARCHAR2(15),
+        data_ini DATE,
+        data_fim DATE,
+        qtd_comunidades NUMBER,
+        qtd_especies NUMBER,
+        qtd_habitantes NUMBER,
+        qtd_faccoes NUMBER,
+        qtd_especies_originarias NUMBER
+    );
+    TYPE t_planeta_info_tab IS TABLE OF t_planeta_info;
+    l_planeta_info_tab t_planeta_info_tab;
+    CURSOR c_planeta_info IS
+        SELECT 
+    p.ID_ASTRO AS planeta, 
+    d.NACAO AS nacao_dominante,
+    d.DATA_INI AS data_ini,
+    d.DATA_FIM AS data_fim,
+    COUNT(h.COMUNIDADE) AS qtd_comunidades,
+    COUNT(DISTINCT h.ESPECIE) AS qtd_especies,
+    SUM(c.QTD_HABITANTES) AS qtd_habitantes,
+    COUNT(DISTINCT part.FACCAO) AS qtd_faccoes,
+    COUNT(e.NOME) AS qtd_especies_originarias
+FROM 
+    PLANETA p
+    LEFT JOIN DOMINANCIA d ON p.ID_ASTRO = d.PLANETA
+    LEFT JOIN HABITACAO h ON p.ID_ASTRO = h.PLANETA
+    LEFT JOIN COMUNIDADE c ON c.ESPECIE = h.ESPECIE AND c.NOME = h.COMUNIDADE
+    LEFT JOIN PARTICIPA part ON part.ESPECIE = h.ESPECIE AND part.COMUNIDADE = h.COMUNIDADE
+    LEFT JOIN ESPECIE e ON p.ID_ASTRO = e.PLANETA_OR
+GROUP BY 
+    p.ID_ASTRO, 
+    d.NACAO,
+    d.DATA_INI,
+    d.DATA_FIM;
+BEGIN
+    OPEN c_planeta_info;
+    FETCH c_planeta_info BULK COLLECT INTO l_planeta_info_tab;
+    CLOSE c_planeta_info;
+    
+    dbms_output.put_line(l_planeta_info_tab.COUNT);
+    
+    FOR i IN 1..l_planeta_info_tab.COUNT LOOP
+        dbms_output.put_line('Planeta: ' || l_planeta_info_tab(i).planeta);
+        dbms_output.put_line('Nação dominante: ' || l_planeta_info_tab(i).nacao_dominante);
+        dbms_output.put_line('Data de início da última dominação: ' || l_planeta_info_tab(i).data_ini);
+        dbms_output.put_line('Data de fim da última dominação: ' || l_planeta_info_tab(i).data_fim);
+        dbms_output.put_line('Quantidade de comunidades: ' || l_planeta_info_tab(i).qtd_comunidades);
+        dbms_output.put_line('Quantidade de espécies: ' || l_planeta_info_tab(i).qtd_especies);
+        dbms_output.put_line('Quantidade de habitantes: ' || l_planeta_info_tab(i).qtd_habitantes);
+        dbms_output.put_line('Quantidade de facções: ' || l_planeta_info_tab(i).qtd_faccoes);
+        dbms_output.put_line('Quantidade de espécies originárias: ' || l_planeta_info_tab(i).qtd_especies_originarias);
+        dbms_output.put_line('-------------------------');
+    END LOOP;
+END;
+
+-- Pegar o tipo pela tabela

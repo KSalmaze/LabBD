@@ -29,6 +29,13 @@ INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('Kepler-2
 INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('HD 96992 b','Ad ab iure', 'Comunidade 4', TO_DATE('25/04/2600', 'DD/MM/YYYY'));
 INSERT INTO HABITACAO (PLANETA, ESPECIE, COMUNIDADE, DATA_INI) VALUES ('K2-62 c','Ad quod', 'Comunidade 5', TO_DATE('25/06/2140', 'DD/MM/YYYY'));
 
+/*
+    FORALL
+
+    O FORALL no PL/SQL é uma construção eficiente para executar operações em lote em bancos de dados Oracle,
+     reduzindo o tempo de execução e minimizando o número de chamadas ao banco de dados.
+*/
+
 DECLARE
     v_faccao faccao.nome%TYPE;
     TYPE Comunidades_Table IS TABLE OF comunidade%ROWTYPE;
@@ -42,7 +49,7 @@ BEGIN
         SELECT C.NOME, C.Especie
         FROM NACAO_FACCAO NF
         JOIN NACAO N ON NF.Nacao = N.Nome AND NF.Faccao = v_faccao
-        JOIN DOMINANCIA D ON D.Nacao = N.Nome
+        JOIN DOMINANCIA D ON D.Nacao = N.Nome AND D.DATA_FIM IS NULL
         JOIN HABITACAO H ON H.Planeta = D.Planeta
         JOIN COMUNIDADE C ON C.Especie = H.Especie AND C.Nome = H.Comunidade
         WHERE NOT EXISTS (
@@ -74,19 +81,26 @@ END;
 /*  TESTANDO
 
 CONSULTA PARA TESTE:*/
-SELECT F.Nome, D.Planeta, C.nome FROM
-    Faccao F JOIN Nacao_Faccao NF ON f.nome = 'FoG'
-    JOIN NACAO N ON nf.nacao = n.nome
-    JOIN DOMINANCIA D ON d.nacao = n.nome
-    JOIN Habitacao H ON h.planeta = d.planeta
-    JOIN Comunidade C ON c.especie = h.especie AND c.nome = h.comunidade;
+SELECT C.NOME, C.Especie
+        FROM NACAO_FACCAO NF
+        JOIN NACAO N ON NF.Nacao = N.Nome AND NF.Faccao = 'FoG'
+        JOIN DOMINANCIA D ON D.Nacao = N.Nome AND D.DATA_FIM IS NULL
+        JOIN HABITACAO H ON H.Planeta = D.Planeta
+        JOIN COMUNIDADE C ON C.Especie = H.Especie AND C.Nome = H.Comunidade
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM PARTICIPA P
+            WHERE P.Especie = H.Especie
+            AND P.Comunidade = H.Comunidade
+        )
 
 /*
+Antes de rodar o código PL/SQL a consulta acima retorna a tupla
+Comunidade 5	Ad quod
 
+Após rodar o código PL/SQL a consulta anão retorna nenhuma tupla indicando 
+que a comunidade foi cadastrada na tabela PARTICIPA
 */
-
--- Mostrar as saidas e verificar as data e tb outras exceptions
--- Falar sobre forall
 
 -- 2)
 
@@ -150,5 +164,3 @@ BEGIN
         dbms_output.put_line('-------------------------');
     END LOOP;
 END;
-
--- Pegar o tipo pela tabela

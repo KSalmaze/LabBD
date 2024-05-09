@@ -117,3 +117,89 @@ EXCEPTION
 END;
 
 -- 3)
+/*
+BEFJANDANLJSFHJNLKJNSL
+
+
+
+
+KREWISDNFDLFNKFWDFSESF
+*/
+
+CREATE OR REPLACE PACKAGE Funcoes_Lider AS
+    
+    e_Acesso_Negado EXCEPTION;
+    
+    PROCEDURE Remover_Nacao (
+     lider_logado IN lider%ROWTYPE,
+        v_nacao_a_ser_removida IN nacao.nome%TYPE);
+        
+    PROCEDURE Criar_Federacao(
+        lider_logado IN lider%ROWTYPE,
+        v_nome_federacao federacao.Nome%TYPE);
+    
+END Funcoes_Lider;
+/
+
+CREATE OR REPLACE PACKAGE BODY Funcoes_Lider AS
+
+PROCEDURE Remover_Nacao(
+    lider_logado IN lider%ROWTYPE,
+    v_nacao_a_ser_removida IN nacao.nome%TYPE) AS
+    v_lider_esperado lider.Cpi%TYPE;
+    v_faccao_lider faccao.nome%TYPE;
+    
+BEGIN
+    SELECT F.Lider INTO v_lider_esperado FROM 
+        Nacao_Faccao NF JOIN Faccao F ON NF.Faccao = F.Nome
+        WHERE NF.Nacao = v_nacao_a_ser_removida;
+        
+    SELECT F.Nome INTO v_faccao_lider FROM
+        Faccao F JOIN Lider L ON F.Lider = L.Cpi WHERE L.Nome = lider_logado.Nome;
+
+    IF lider_logado.Cpi = v_lider_esperado THEN
+        DELETE FROM NACAO_FACCAO WHERE Nacao = v_nacao_a_ser_removida AND Faccao = v_faccao_lider;
+    ELSE
+        RAISE e_Acesso_Negado;
+    END IF;
+END;
+
+PROCEDURE Criar_Federacao(
+        lider_logado IN lider%ROWTYPE,
+        v_nome_federacao federacao.Nome%TYPE) AS
+        v_nacao_lider Lider.nacao%TYPE;
+
+BEGIN
+    IF lider_logado.Cargo != 'COMANDANTE' THEN
+        dbms_output.put_line('Acesso negado');
+    END IF;
+    
+    IF (SELECT * FROM Federacao WHERE Nome = v_nome_federacao) IS NOT NULL THEN
+        dbms_output.put_line('Ja existe uma federacao com esse nome');
+    END IF;
+    
+    INSERT INTO Federacao VALUES(v_nome_federacao, SYSDATE);
+    UPDATE Nacao SET federacao = v_nome_federacao WHERE nome = lider_logado.nacao;
+END;
+        
+        
+END Funcoes_Lider;
+
+/
+
+DROP PROCEDURE Remover_Nacao;
+
+/
+
+DECLARE
+    v_lider lider%ROWTYPE;
+    v_nacao_para_remocao nacao.nome%TYPE;
+BEGIN
+    v_nacao_para_remocao := 'Sit id ipsam.';
+    
+    SELECT * INTO v_lider FROM Lider WHERE Nome = 'Oliver';
+    
+    Funcoes_Lider.Remover_Nacao(v_lider, v_nacao_para_remocao);
+EXCEPTION
+    WHEN Funcoes_Lider.e_Acesso_Negado THEN dbms_output.put_line('Acesso negado');
+END;

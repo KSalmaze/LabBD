@@ -129,6 +129,7 @@ KREWISDNFDLFNKFWDFSESF
 CREATE OR REPLACE PACKAGE Funcoes_Lider AS
     
     e_Acesso_Negado EXCEPTION;
+    e_Federacao_Repetida EXCEPTION;
     
     PROCEDURE Remover_Nacao (
      lider_logado IN lider%ROWTYPE,
@@ -168,20 +169,22 @@ PROCEDURE Criar_Federacao(
         lider_logado IN lider%ROWTYPE,
         v_nome_federacao federacao.Nome%TYPE) AS
         v_nacao_lider Lider.nacao%TYPE;
+        v_contagem_de_federacaoes NUMBER;
 
 BEGIN
     IF lider_logado.Cargo != 'COMANDANTE' THEN
         dbms_output.put_line('Acesso negado');
     END IF;
     
-    IF (SELECT * FROM Federacao WHERE Nome = v_nome_federacao) IS NOT NULL THEN
-        dbms_output.put_line('Ja existe uma federacao com esse nome');
+    SELECt COUNT(*) INTO v_contagem_de_federacaoes FROM Federacao WHERE Nome = v_nome_federacao;
+    
+    IF v_contagem_de_federacaoes != 0 THEN
+        dbms_output.put_line('Ja ha uma federacao com esse nome');
     END IF;
     
     INSERT INTO Federacao VALUES(v_nome_federacao, SYSDATE);
     UPDATE Nacao SET federacao = v_nome_federacao WHERE nome = lider_logado.nacao;
 END;
-        
         
 END Funcoes_Lider;
 

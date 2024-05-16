@@ -190,19 +190,25 @@ END Funcoes_Lider;
 
 /
 
-DROP PROCEDURE Remover_Nacao;
-
-/
-
 DECLARE
     v_lider lider%ROWTYPE;
-    v_nacao_para_remocao nacao.nome%TYPE;
+    v_federacao_para_adicionar federacao.nome%TYPE;
 BEGIN
-    v_nacao_para_remocao := 'Sit id ipsam.';
+    v_federacao_para_adicionar := 'Benzoato';
     
-    SELECT * INTO v_lider FROM Lider WHERE Nome = 'Oliver';
+    SELECT * INTO v_lider FROM Lider WHERE Nome = 'Mathues';
     
-    Funcoes_Lider.Remover_Nacao(v_lider, v_nacao_para_remocao);
+    Funcoes_Lider.Criar_Federacao(v_lider, v_federacao_para_adicionar);
 EXCEPTION
     WHEN Funcoes_Lider.e_Acesso_Negado THEN dbms_output.put_line('Acesso negado');
+    WHEN Funcoes_Lider.e_Federacao_Repetida THEN dbms_output.put_line('Ja existe um afederação com esse nome');
 END;
+
+-- Para testes 
+
+UPDATE Lider SET Cargo = 'COMANDANTE' WHERE Nome = 'Mathues';
+
+SELECT * FROM FEDERACAO WHERE Nome = 'Benzoato';
+
+-- 4)
+

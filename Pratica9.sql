@@ -212,3 +212,59 @@ SELECT * FROM FEDERACAO WHERE Nome = 'Benzoato';
 
 -- 4)
 
+CREATE OR REPLACE PACKAGE Funcoes_Cientista AS
+    
+    -- Create
+    PROCEDURE Adicioar_Estrela(v_estrela IN estrela%ROWTYPE);
+    
+    -- Read
+    PROCEDURE Ler_Por_Classificacao(v_cursor OUT SYS_REFCURSOR, v_classificacao estrela.classificacao%TYPE);
+    
+    -- Delete
+    PROCEDURE Remover_Estrela_Por_ID(v_id_estrela IN estrela.id_estrela%TYPE);
+    PROCEDURE Remover_Estrela_Por_Nome(v_nome_estrela IN estrela.nome%TYPE);
+    
+    -- Update
+    PROCEDURE Atualizat_Massa_Estrela(v_id_estrela IN estrela.id_estrela%TYPE, v_nova_massa IN NUMBER);
+    PROCEDURE Atualizat_Classficacao_Estrela(v_id_estrela IN estrela.id_estrela%TYPE, v_nova_classificacao IN estrela.classificacao%TYPE);
+    
+END Funcoes_Cientista;
+
+/
+
+CREATE OR REPLACE PACKAGE BODY Funcoes_Cientista AS
+
+    PROCEDURE Adicioar_Estrela(v_estrela IN estrela%ROWTYPE) AS
+    
+    BEGIN 
+        INSERT INTO Estrela VALUES v_estrela;
+        -- Execao se ja houver uma estrela com esse nome
+    END;
+    
+    PROCEDURE Ler_Por_Classificacao(v_cursor OUT SYS_REFCURSOR, v_classificacao estrela.classificacao%TYPE) AS
+    BEGIN
+        OPEN v_cursor FOR SELECT *
+            FROM Estrela WHERE Classificacao = v_classificacao;
+    END;
+    
+    PROCEDURE Remover_Estrela_Por_ID(v_id_estrela IN estrela.id_estrela%TYPE) AS
+    BEGIN
+        DELETE FROM Estrela WHERE id_estrela = v_id_estrela;
+    END;
+    
+    PROCEDURE Remover_Estrela_Por_Nome(v_nome_estrela IN estrela.nome%TYPE) AS
+    BEGIN
+        DELETE FROM Estrela WHERE Nome = v_nome_estrela;
+    END;
+    
+    PROCEDURE Atualizat_Massa_Estrela(v_id_estrela IN estrela.id_estrela%TYPE, v_nova_massa IN NUMBER) AS
+    BEGIN
+        UPDATE Estrela SET Massa = v_nova_massa WHERE Id_Estrela = v_id_estrela;
+    END;
+    
+    PROCEDURE Atualizat_Classficacao_Estrela(v_id_estrela IN estrela.id_estrela%TYPE, v_nova_classificacao IN estrela.classificacao%TYPE) AS
+    BEGIN
+        UPDATE Estrela SET Classificacao = v_nova_classificacao WHERE Id_Estrela = v_id_estrela;
+    END;
+
+END Funcoes_Cientista;

@@ -228,6 +228,10 @@ CREATE OR REPLACE PACKAGE Funcoes_Cientista AS
     PROCEDURE Atualizat_Massa_Estrela(v_id_estrela IN estrela.id_estrela%TYPE, v_nova_massa IN NUMBER);
     PROCEDURE Atualizat_Classficacao_Estrela(v_id_estrela IN estrela.id_estrela%TYPE, v_nova_classificacao IN estrela.classificacao%TYPE);
     
+    -- Relatorios
+    PROCEDURE Info_Estrelas_e_seus_Sistemas(c_estrelas OUT SYS_REFCURSOR);
+    PROCEDURE Info_Planetas(c_planetas OUT SYS_REFCURSOR);
+
 END Funcoes_Cientista;
 
 /
@@ -265,6 +269,20 @@ CREATE OR REPLACE PACKAGE BODY Funcoes_Cientista AS
     PROCEDURE Atualizat_Classficacao_Estrela(v_id_estrela IN estrela.id_estrela%TYPE, v_nova_classificacao IN estrela.classificacao%TYPE) AS
     BEGIN
         UPDATE Estrela SET Classificacao = v_nova_classificacao WHERE Id_Estrela = v_id_estrela;
+    END;
+
+    PROCEDURE Info_Estrelas_e_seus_Sistemas(c_estrelas OUT SYS_REFCURSOR) AS
+    BEGIN
+        OPEN c_estrelas FOR
+            SELECT E.Id_Estrela AS ID, E.Nome, E.Classificacao, E.Massa, S.Nome AS Sistema, E.X, E.Y, E.Z
+            FROM Estrela E
+                LEFT JOIN Sistema S ON E.Id_Estrela = S.Estrela;
+    END;
+    
+    PROCEDURE Info_Planetas(c_planetas OUT SYS_REFCURSOR) AS
+    BEGIN
+        OPEN c_planetas FOR
+            SELECT * FROM Planeta;
     END;
 
 END Funcoes_Cientista;

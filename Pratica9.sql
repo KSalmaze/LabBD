@@ -286,3 +286,64 @@ CREATE OR REPLACE PACKAGE BODY Funcoes_Cientista AS
     END;
 
 END Funcoes_Cientista;
+
+/
+
+-- PL/SQL simples apenas para testes
+
+DECLARE
+    v_estrela Estrela%ROWTYPE;
+    v_planeta Planeta%ROWTYPE;
+    v_cursor SYS_REFCURSOR;
+    v_id_estrela Estrela.id_estrela%TYPE;
+    v_nova_massa NUMBER;
+    v_nova_classificacao Estrela.classificacao%TYPE;
+BEGIN
+    -- Definindo valores para a estrela
+    v_estrela.id_estrela := 1;
+    v_estrela.nome := 'Estrela Teste';
+    v_estrela.classificacao := 'G';
+    v_estrela.massa := 1.0;
+    v_estrela.X := 1;
+    v_estrela.Y := 34;
+    v_estrela.Z := 16;
+    
+    -- Adicionando uma nova estrela
+    Funcoes_Cientista.Adicioar_Estrela(v_estrela);
+    
+    -- Lendo estrelas por classificação
+    Funcoes_Cientista.Ler_Por_Classificacao(v_cursor, 'G');
+    -- Aqui você pode processar os resultados do cursor v_cursor
+    
+    -- Atualizando a massa de uma estrela
+    v_id_estrela := 1;
+    v_nova_massa := 2.0;
+    Funcoes_Cientista.Atualizat_Massa_Estrela(v_id_estrela, v_nova_massa);
+    
+    -- Atualizando a classificação de uma estrela
+    v_nova_classificacao := 'K';
+    Funcoes_Cientista.Atualizat_Classficacao_Estrela(v_id_estrela, v_nova_classificacao);
+    
+    -- Removendo uma estrela por ID
+    Funcoes_Cientista.Remover_Estrela_Por_ID(v_id_estrela);
+    
+    -- Removendo uma estrela por nome
+    Funcoes_Cientista.Remover_Estrela_Por_Nome('Estrela Teste');
+    
+    -- Obtendo informações sobre estrelas e seus sistemas
+    Funcoes_Cientista.Info_Estrelas_e_seus_Sistemas(v_cursor);
+    -- Aqui você pode processar os resultados do cursor v_cursor
+    
+    CLOSE v_cursor;
+    
+    -- Obtendo informações sobre planetas
+    Funcoes_Cientista.Info_Planetas(v_cursor);
+    LOOP
+        FETCH v_cursor INTO v_planeta;
+        EXIT WHEN v_cursor%NOTFOUND;
+        
+        DBMS_OUTPUT.PUT_LINE(v_planeta.ID_Astro || ' ' || v_planeta.Massa);
+    END LOOP;
+    
+    -- Aqui você pode processar os resultados do cursor v_cursor
+END;

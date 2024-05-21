@@ -117,14 +117,6 @@ EXCEPTION
 END;
 
 -- 3)
-/*
-BEFJANDANLJSFHJNLKJNSL
-
-
-
-
-KREWISDNFDLFNKFWDFSESF
-*/
 
 CREATE OR REPLACE PACKAGE Funcoes_Lider AS
     
@@ -299,7 +291,6 @@ DECLARE
     v_nova_massa NUMBER;
     v_nova_classificacao Estrela.classificacao%TYPE;
 BEGIN
-    -- Definindo valores para a estrela
     v_estrela.id_estrela := 1;
     v_estrela.nome := 'Estrela Teste';
     v_estrela.classificacao := 'G';
@@ -313,26 +304,22 @@ BEGIN
     
     -- Lendo estrelas por classificação
     Funcoes_Cientista.Ler_Por_Classificacao(v_cursor, 'G');
-    -- Aqui você pode processar os resultados do cursor v_cursor
+    -- Processar os resultados do cursor v_cursor
     
-    -- Atualizando a massa de uma estrela
     v_id_estrela := 1;
     v_nova_massa := 2.0;
     Funcoes_Cientista.Atualizat_Massa_Estrela(v_id_estrela, v_nova_massa);
     
-    -- Atualizando a classificação de uma estrela
     v_nova_classificacao := 'K';
     Funcoes_Cientista.Atualizat_Classficacao_Estrela(v_id_estrela, v_nova_classificacao);
     
-    -- Removendo uma estrela por ID
     Funcoes_Cientista.Remover_Estrela_Por_ID(v_id_estrela);
     
-    -- Removendo uma estrela por nome
     Funcoes_Cientista.Remover_Estrela_Por_Nome('Estrela Teste');
     
     -- Obtendo informações sobre estrelas e seus sistemas
     Funcoes_Cientista.Info_Estrelas_e_seus_Sistemas(v_cursor);
-    -- Aqui você pode processar os resultados do cursor v_cursor
+    -- Processar os resultados do cursor v_cursor
     
     CLOSE v_cursor;
     
@@ -344,6 +331,4 @@ BEGIN
         
         DBMS_OUTPUT.PUT_LINE(v_planeta.ID_Astro || ' ' || v_planeta.Massa);
     END LOOP;
-    
-    -- Aqui você pode processar os resultados do cursor v_cursor
 END;

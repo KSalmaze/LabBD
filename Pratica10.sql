@@ -5,8 +5,15 @@
 
 -- 1)
 -- a)
+/*
+    A ideia inicial era fazer essa verificação quando uma nova federação fosse inserida,
+    porém sempre que uma nova federação é inserida necessáriemte ela não vai estar associana a
+    nenhuma nação.
+
+    Explicar pq não vai ser perfeita, não importa a situação
+*/
 CREATE OR REPLACE TRIGGER Verficacao_Federacao
-AFTER DELETE OR UPDATE ON Nacao
+BEFORE INSERT ON Federacao
 
 BEGIN
     
@@ -15,4 +22,7 @@ BEGIN
                                             Federacao F JOIN Nacao N ON
                                             F.Nome = N.Federacao);
     
-END; 
+END;
+
+
+-- b)

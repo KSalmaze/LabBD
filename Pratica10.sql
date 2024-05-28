@@ -27,7 +27,7 @@ BEGIN
 END;
 
 -- Testando
--- Apenas tantando iserir uma federacao sem nenhuma nacao associada o erro acontece e não permite a insercao
+-- Apenas tantando inserir uma federacao sem nenhuma nacao associada o erro acontece e não permite a insercao
 INSERT INTO Federacao VALUES('Bom dia', TO_DATE('25/04/2190', 'DD/MM/YYYY'));
 
 -- Porém após inserirmos uma nacao sem federacao a insercao da federacao é permitida
@@ -36,8 +36,25 @@ INSERT INTO Federacao VALUES('Bom dia', TO_DATE('25/04/2190', 'DD/MM/YYYY'));
 
 
 -- b)
+/*
+    Não está pronta
+*/
+CREATE OR REPLACE TRIGGER LIDER_NACAO_FACCAO
+BEFORE INSERT OR UPDATE ON NACAO_FACCAO
+FOR EACH ROW
+DECLARE
+    v_contador NUMBER;
+BEGIN
+    -- VERIFICA SE O LIDER VEM DE UMA NACAO DOMINADA PELA FACCAO QUE CONTROLA
+    SELECT COUNT(*) INTO v_contador FROM 
+        Lider L JOIN Faccao F ON L.Cpi = F.Lider
+        WHERE :NEW.Nacao = L.Nacao;
 
-
+    -- SE 0, LIDER NAO EH DE NACAO DOMINADA PELA FACCAO
+    IF v_contador = 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'O líder da facção deve estar associado à nação em que a facção está presente.');
+    END IF;
+END;
 
 -- c)
 

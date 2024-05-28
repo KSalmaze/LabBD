@@ -26,10 +26,18 @@ BEGIN
     END IF;
 END;
 
+-- Testando
+-- Apenas tantando iserir uma federacao sem nenhuma nacao associada o erro acontece e não permite a insercao
+INSERT INTO Federacao VALUES('Bom dia', TO_DATE('25/04/2190', 'DD/MM/YYYY'));
 
+-- Porém após inserirmos uma nacao sem federacao a insercao da federacao é permitida
+INSERT INTO Nacao(Nome) VALUES('Frost');
+INSERT INTO Federacao VALUES('Bom dia', TO_DATE('25/04/2190', 'DD/MM/YYYY'));
 
 
 -- b)
+
+
 
 -- c)
 

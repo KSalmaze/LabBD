@@ -36,25 +36,38 @@ INSERT INTO Federacao VALUES('Bom dia', TO_DATE('25/04/2190', 'DD/MM/YYYY'));
 
 
 -- b)
-/*
-    Não está pronta
-*/
 CREATE OR REPLACE TRIGGER LIDER_NACAO_FACCAO
 BEFORE INSERT OR UPDATE ON NACAO_FACCAO
 FOR EACH ROW
 DECLARE
     v_contador NUMBER;
 BEGIN
-    -- VERIFICA SE O LIDER VEM DE UMA NACAO DOMINADA PELA FACCAO QUE CONTROLA
     SELECT COUNT(*) INTO v_contador FROM 
         Lider L JOIN Faccao F ON L.Cpi = F.Lider
         WHERE :NEW.Nacao = L.Nacao;
 
-    -- SE 0, LIDER NAO EH DE NACAO DOMINADA PELA FACCAO
     IF v_contador = 0 THEN
-        RAISE_APPLICATION_ERROR(-20001, 'O líder da facção deve estar associado à nação em que a facção está presente.');
+        RAISE_APPLICATION_ERROR(-20002, 'O lider da facção nao esta associado a uma nação onde sua facção está presente.');
     END IF;
 END;
+
+-- Testando
+-- Primeiro vamos criar um lider e uma faccao
+INSERT INTO Lider (Cpi, Nome, Cargo, Nacao, Especie) 
+    VALUES ('596.425.888-26', 'Nilton', 'COMANDANTE', 'Ut minima.', 'A ab et');
+    
+INSERT INTO Faccao (Nome, Lider, Ideologia, Qtd_nacoes) 
+    VALUES ('Corvus', '596.425.888-26', 'TRADICIONALISTA', 5);
+
+-- Agora vamos tentar associar uma nacao em que a faccao não está presente
+INSERT INTO Nacao_Faccao (Nacao, Faccao) 
+    VALUES ('Dolores quis.', 'Corvus');
+-- Isso resulta no erro -20002, como esperado   
+
+-- Agora quando colocamos uma nação válida
+INSERT INTO Nacao_Faccao (Nacao, Faccao) 
+    VALUES ('Ut minima.', 'Corvus');
+-- Nenhum erro é encontrado
 
 -- c)
 
@@ -113,3 +126,51 @@ UPDATE Nacao_Faccao SET Faccao = 'Mad' WHERE Nacao = 'Quis optio.';
 -- com isso o trigger funciona corretamente
 
 -- d)
+CREATE OR REPLACE TRIGGER Atualizar_Nrm_Planetas_em_Nacao
+AFTER INSERT OR UPDATE OR DELETE ON Dominancia
+
+DECLARE
+    v_qnt_planetas NUMBER;
+BEGIN
+    -- foreach
+    FOR v_nacao IN (SELECT * FROM Nacao) 
+    LOOP
+        SELECT COUNT(*) INTO v_qnt_planetas 
+            FROM Dominancia WHERE Nacao = v_nacao.Nome 
+                AND DATA_INI <= TRUNC(SYSDATE) AND
+                    (DATA_FIM >= TRUNC(SYSDATE) OR DATA_FIM IS NULL);
+        
+        UPDATE Nacao SET Qtd_Planetas = v_qnt_planetas WHERE Nome = v_nacao.Nome;
+        
+    END LOOP;
+    
+END Atualizar_Nrm_Nacoes_em_Faccoes;
+
+-- Testando
+-- Para facilitar os testes eu Dropei o trigger da letra a
+-- apenas para acelar as alterações em nacao
+
+-- Inicialmente vamos criar um planeta e uma nacao novas
+INSERT INTO Nacao (Nome) VALUES ('Icmc');
+
+INSERT INTO Planeta (Id_Astro) VALUES ('Laurian');
+
+-- Agora vamos inserilos na tabela de dominancia 
+
+INSERT INTO Dominancia (Planeta, Nacao, Data_Ini) 
+    VALUES ('Laurian', 'Icmc', TO_DATE('25/04/2016', 'DD/MM/YYYY'));
+
+-- Agora fazendo um Select na tabela de nacao, a quantidade de planetas associados a nacao Icmc é 1
+SELECT * FROM Nacao WHERE Nome = 'Icmc';
+-- Aparentemente tudo funcionou corretamente, mas para ter certeza vamos adicionar mais um planeta
+
+INSERT INTO Planeta (Id_Astro) VALUES ('Lucien');
+    
+INSERT INTO Dominancia (Planeta, Nacao, Data_Ini) 
+    VALUES ('Lucien', 'Icmc', TO_DATE('25/04/2016', 'DD/MM/YYYY'));
+
+
+SELECT * FROM Nacao WHERE Nome = 'Icmc';
+-- Repetindo o Select o resultado agora é 2, ou seja o trigger funcionou corretamente
+
+-- 2)

@@ -174,3 +174,71 @@ SELECT * FROM Nacao WHERE Nome = 'Icmc';
 -- Repetindo o Select o resultado agora é 2, ou seja o trigger funcionou corretamente
 
 -- 2)
+-- A view
+CREATE OR REPLACE VIEW V_FACCAO_GERENCIAMENTO AS
+SELECT 
+    n.Nome AS Nacao,
+    h.Planeta AS Planeta,
+    c.Nome AS Comunidade,
+    c.Especie,
+    f.Nome AS Faccao,
+    CASE 
+        WHEN part.FACCAO IS NOT NULL THEN 'CREDENCIADA'
+        ELSE 'NAO CREDENCIADA'
+    END AS STATUS
+FROM 
+    NACAO_FACCAO nf
+JOIN 
+    FACCAO f ON nf.FACCAO = f.NOME
+JOIN 
+    NACAO n ON nf.NACAO = n.NOME
+JOIN 
+    DOMINANCIA d ON n.NOME = d.NACAO
+JOIN 
+    HABITACAO h ON d.PLANETA = h.PLANETA
+JOIN 
+    COMUNIDADE c ON h.ESPECIE = c.ESPECIE AND h.COMUNIDADE = c.NOME
+LEFT JOIN 
+    PARTICIPA part ON part.FACCAO = f.NOME AND part.ESPECIE = c.ESPECIE AND part.COMUNIDADE = c.NOME
+ORDER BY Faccao
+WITH CHECK OPTION;
+
+-- O Trigger
+CREATE OR REPLACE TRIGGER trg_instead_of_insert_v_faccao_gerenciamento
+INSTEAD OF INSERT ON V_FACCAO_GERENCIAMENTO
+FOR EACH ROW
+DECLARE
+    v_count NUMBER;
+    e_dados_invalidos EXCEPTION; -- Definir a exceção para dados inválidos
+BEGIN
+    -- Verificar se algum campo obrigatório é nulo
+    IF :NEW.Faccao IS NULL
+        OR :NEW.Especie IS NULL
+        OR :NEW.Comunidade IS NULL
+    THEN 
+        RAISE e_dados_invalidos;
+    END IF;
+    
+    -- Verificar se a comunidade habita um planeta dominado por uma nação onde a facção está presente
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Nacao_Faccao nf
+    JOIN Dominancia d ON nf.Nacao = d.Nacao
+    JOIN Habitacao h ON d.Planeta = h.Planeta
+    WHERE nf.Faccao = :NEW.Faccao
+      AND h.Especie = :NEW.Especie
+      AND h.Comunidade = :NEW.Comunidade
+      AND (d.DATA_FIM IS NULL OR d.DATA_FIM >= SYSDATE)
+      AND d.DATA_INI <= SYSDATE;
+    
+    -- Se a verificação for positiva, inserir na tabela PARTICIPA
+    IF v_count > 0 THEN
+        INSERT INTO Participa (Faccao, Especie, Comunidade)
+        VALUES (:NEW.Faccao, :NEW.Especie, :NEW.Comunidade);
+    ELSE
+        RAISE_APPLICATION_ERROR(-20003, 'A comunidade não atende aos critérios de credenciamento.');
+    END IF;
+EXCEPTION
+    WHEN e_dados_invalidos THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Campos obrigatórios não podem ser nulos.');
+END;

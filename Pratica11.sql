@@ -14,6 +14,10 @@ INSERT INTO Lider (Cpi, Nome, Cargo, Nacao, Especie)
 INSERT INTO Faccao (Nome, Lider, Ideologia, Qtd_nacoes) 
     VALUES ('Corvus', '596.425.888-26', 'TRADICIONALISTA', 5);
 
+-- Consulta
+SELECT * FROM Lider L JOIN 
+    Faccao F ON F.Lider = L.Cpi;    
+
 /* READ COMMITTED
     Quando a consulta é feita pelo usuário 2 no passo VI, nenhuma mudança é vista, 
     porém após o passo VII onde o usuário executa 1 o COMMIT as mudanças podem ser vistas,
@@ -56,4 +60,60 @@ BEGIN
     END IF;
 END;
 
+-- Testando
+INSERT INTO Sistema (Estrela, Nome) VALUES('Gam1Sgr','Manjaro');
+
+DELETE FROM Sistema WHERE Nome = 'Manjaro';
+
+INSERT INTO Sistema (Estrela, Nome) VALUES('Gam1Sgr','Kali');
+
+UPDATE Sistema SET Nome = 'Manjaro' WHERE Nome = 'Kali';
+
+SELECT * FROM Log_Sistema;
+
 -- b)
+
+-- Primeiro vamos executar uma operação que dispare o trigger
+
+INSERT INTO Sistema (Estrela, Nome) VALUES('GJ 9119B','Manjaro');
+
+-- Vamos verificar o log
+
+SELECT * FROM Log_Sistema;
+/*
+    A13783714	04/06/24 17:55:50,107000000	INSERT
+*/
+
+-- Executar uma rollback e verificar o log novamente
+ROLLBACK;
+SELECT * FROM Log_Sistema;
+-- Agora a o log aparece vazio
+
+/*
+    A operação de inserção não está mais no log, porque o rollback 
+    da transação também desfez a operação de inserção realizada pelo trigger.
+*/
+
+-- Agora novamente vamos executar uma operação que dispare o trigger
+INSERT INTO Sistema (Estrela, Nome) VALUES('GJ 9119B','Manjaro');
+
+-- Vamos verificar o log
+
+SELECT * FROM Log_Sistema;
+/*
+    A13783714	04/06/24 17:57:58,232000000	INSERT
+*/
+
+-- Executar um commit e verificar o log novamente
+COMMIT;
+SELECT * FROM Log_Sistema;
+/*
+    A13783714	04/06/24 17:57:58,232000000	INSERT
+*/
+
+/*
+    a operação de inserção ainda está no log, porque o commit da transação 
+    também confirmou a operação de inserção realizada pelo trigger.
+*/
+
+-- c)

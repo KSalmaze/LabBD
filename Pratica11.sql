@@ -46,7 +46,6 @@ CREATE TABLE Log_Sistema(
 -- Trigger
 CREATE OR REPLACE TRIGGER log_de_Sistema
 AFTER INSERT OR UPDATE OR DELETE ON Sistema
-FOR EACH ROW
 BEGIN
     IF INSERTING THEN
         INSERT INTO Log_Sistema (usuario, data_operacao, operacao)
@@ -117,3 +116,48 @@ SELECT * FROM Log_Sistema;
 */
 
 -- c)
+-- Novo trigger
+CREATE OR REPLACE TRIGGER log_de_Sistema
+AFTER INSERT OR UPDATE OR DELETE ON Sistema
+DECLARE
+    PRAGMA AUTONOMOUS_TRANSACTION; 
+BEGIN
+    IF INSERTING THEN
+        INSERT INTO Log_Sistema (usuario, data_operacao, operacao)
+        VALUES (USER, CURRENT_TIMESTAMP, 'INSERT');
+    ELSIF UPDATING THEN
+        INSERT INTO Log_Sistema (usuario, data_operacao, operacao)
+        VALUES (USER, CURRENT_TIMESTAMP, 'UPDATE');
+    ELSE
+        INSERT INTO Log_Sistema (usuario, data_operacao, operacao)
+        VALUES (USER, CURRENT_TIMESTAMP, 'DELETE');
+    END IF;
+    
+    COMMIT;
+END;
+
+-- Testando
+
+-- Primeiro vamos executar uma operação que dispare o trigger
+INSERT INTO Sistema (Estrela, Nome) VALUES('Tonatiuh','Arch');
+
+-- Vamos verificar o log
+SELECT * FROM Log_Sistema;
+/*
+    A13783714	04/06/24 17:57:58,232000000	INSERT
+    A13783714	04/06/24 20:00:35,972000000	INSERT
+*/
+
+-- Executar uma rollback e verificar o log novamente
+ROLLBACK;
+SELECT * FROM Log_Sistema;
+/*
+    A13783714	04/06/24 17:57:58,232000000	INSERT
+    A13783714	04/06/24 20:00:35,972000000	INSERT
+*/
+
+/*
+    O log agora é mantido mesmo após o rollback.
+*/
+
+-- 3)

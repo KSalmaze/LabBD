@@ -161,3 +161,42 @@ SELECT * FROM Log_Sistema;
 */
 
 -- 3)
+/* TRANSACAO QUE DEVERA SER IMPLEMENTADA NO PROJETO FINAL:
+ * Lider de uma faccao remover faccao de nacao (Gerenciamento: item 1.b) */
+
+
+-- LETRA A: OPERACOES QUE ESTAO INCLUIDAS NA TRANSACAO
+/* Operacao de SELECT na tabela NACAO para verificar se a nacao em questao existe;
+ * Operacao de SELECT na tabela FACCAO para verificar se a faccao que sera removida existe;
+ *
+ * -------------------------------- TRIGGER Verificar_Associacoes_Faccao --------------------------------
+ * * (Impede o DELETE em NACAO_FACCAO quando isso causa a dissociacao da faccao com a nacao de seu lider)
+ * Operacao de SELECT na tabela FACCAO para obter o CPI do lider da faccao que sera removida;
+ * Operacao de SELECT na tabela LIDER para obter a nacao a qual o lider da faccao pertence;
+ * ------------------------------------------------------------------------------------------------------
+ *
+ * Operacao de DELETE na tabela NACAO_FACCAO para remover a faccao da nacao;
+ *
+ * -------------------------------- TRIGGER Atualizar_Faccao_Qtd_Nacoes --------------------------------
+ * * (Atualiza a quantidade de nacoes da tabela FACCAO depois de um DELETE em NACAO_FACCAO)
+ * Operacao de SELECT na tabela FACCAO para obter todas as faccoes existentes na tabela;
+ * Operacoes de SELECT na tabela NACAO_FACCAO para contar quantas nacoes estao associadas a cada faccao;
+ * Operacoes de UPDATE na tabela FACCAO para atualizar a quantidade de nacoes de cada faccao.
+ * -----------------------------------------------------------------------------------------------------
+ * */
+
+
+-- LETRA B: NIVEL DE ISOLAMENTO DA TRANSACAO
+/* A transacao definida deve ter nivel de isolamento 'SERIALIZABLE'.
+ * Isso porque, principalmente devido aos triggers que serao implementados para garantir a consistencia da base de dados, ela inclui muitas operacoes em varias tabelas diferentes, que podem acabar sofrendo anomalias.
+ * Dessa forma, eh essencial que o nivel de isolamento 'SERIALIZABLE' seja usado para que as anomalias de leitura invalida, leitura nao repetivel e leitura fantasma sejam evitadas.
+ * */
+
+
+-- LETRA C: SAVEPOINTS E TRANSACOES AUTONOMAS
+/* Nao sera necessario utilizar nenhuma transacao autonoma, pois todas as operacoes DML incluidas na transacao, incluindo as operacoes DML dos triggers, devem ser desfeitas caso a transacao em questao sofra ROLLBACK.
+ * Por exemplo, nao faz sentido que o trigger que atualiza a quantidade de nacoes na tabela FACCAO seja efetivado se o DELETE da tabela NACAO_FACCAO sofrer ROLLBACK.
+ * Tambem nao sera necessario utilizar nenhum savepoint, pois se a transacao sofrer um ROLLBACK, todas as operacoes incluidas nela deverao ser desfeitas.
+ * Isso porque, apesar de a transacao em questao incluir muitas operacoes em varias tabelas diferentes, a maioria delas nao sao operacoes DML, pois elas sao usadas para atingir um unico objetivo: remover a faccao de uma nacao de forma consistente.
+ * Assim, se esse objetivo nao for concluido, todas as operacoes deverao ser desfeitas, dispensando a necessidade da utilizacao de savepoints.
+ * */
